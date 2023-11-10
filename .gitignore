@@ -1,0 +1,8 @@
+*.gb
+*.sav
+*.sym
+*.map
+tools/scan_includes
+*.o
+*.1bpp
+*.2bpp
