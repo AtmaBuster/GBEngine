@@ -6,3 +6,4 @@ tools/scan_includes
 *.o
 *.1bpp
 *.2bpp
+test.py

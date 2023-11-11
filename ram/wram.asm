@@ -4,3 +4,8 @@ SECTION "WRAM Stack", WRAM0
 
 wStack:: ds $100
 wStackPointer::
+
+wTileMap:: ds SCREEN_WIDTH * SCREEN_HEIGHT
+IF CGB_SUPPORT == 1
+wAttrMap:: ds SCREEN_WIDTH * SCREEN_HEIGHT
+ENDC

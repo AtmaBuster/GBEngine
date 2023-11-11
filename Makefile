@@ -42,7 +42,36 @@ tidy:
 tools:
 	$(MAKE) -C tools/
 
-RGBASMFLAGS = -L -Weverything
+fix_opt = -v -t $(GAME_TITLE) -i $(GAME_CODE) -n $(VERSION) -k $(LICENSEE) -l 0x33 -m $(MBC_VALUE) -r $(RAM_SIZE) -p 0
+
+ifeq ($(IS_JPN),true)
+	asm_def := -D IS_JPN=1
+else
+	fix_opt := $(fix_opt) -j
+	asm_def := -D IS_JPN=0
+endif
+
+ifeq ($(CGB_SUPPORT),true)
+	asm_def := $(asm_def) -D CGB_SUPPORT=1
+	ifeq ($(CGB_ONLY),true)
+		asm_def := $(asm_def) -D CGB_ONLY=1
+		fix_opt := $(fix_opt) -C
+	else
+		asm_def := $(asm_def) -D CGB_ONLY=0
+		fix_opt := $(fix_opt) -c
+	endif
+else
+	asm_def := $(asm_def) -D CGB_SUPPORT=0
+endif
+
+ifeq ($(SGB_SUPPORT),true)
+	asm_def := $(asm_def) -D SGB_SUPPORT=1
+	fix_opt := $(fix_opt) -s
+else
+	asm_def := $(asm_def) -D SGB_SUPPORT=0
+endif
+
+RGBASMFLAGS = -hL -Weverything $(asm_def)
 
 define DEP
 $1: $2 $$(shell tools/scan_includes $2)
@@ -55,30 +84,6 @@ $(info $(shell $(MAKE) -C tools))
 
 $(foreach obj, $(game_obj), $(eval $(call DEP,$(obj),$(obj:.o=.asm))))
 
-endif
-
-fix_opt = -v -t $(GAME_TITLE) -i $(GAME_CODE) -n $(VERSION) -k $(LICENSEE) -l 0x33 -m $(MBC_VALUE) -r $(RAM_SIZE) -p 0
-
-ifeq ($(IS_JPN),true)
-	# nothing
-else
-	fix_opt := $(fix_opt) -j
-endif
-
-ifeq ($(CGB_SUPPORT),true)
-	ifeq ($(CGB_ONLY),true)
-		fix_opt := $(fix_opt) -C
-	else
-		fix_opt := $(fix_opt) -c
-	endif
-else
-	# nothing
-endif
-
-ifeq ($(SGB_SUPPORT),true)
-	fix_opt := $(fix_opt) -s
-else
-	# nothing
 endif
 
 $(ROM_NAME).gb: $(game_obj) layout.link
