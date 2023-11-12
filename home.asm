@@ -3,10 +3,13 @@ INCLUDE "charmap.asm"
 
 SECTION "Vectors", ROM0[$0000]
 _rst00:
-	ret
+Reset:
+	jp _Reset
 
 	ds $08 - @
 _rst08:
+BankSwitch:
+	ld [MBC5RomBank], a
 	ret
 
 	ds $10 - @
@@ -43,7 +46,8 @@ _VBlank:
 
 	ds $48 - @
 _LCD:
-	reti
+	push af
+	jp LCD
 
 	ds $50 - @
 _Timer:
@@ -96,6 +100,7 @@ _Start::
 .done_hw_check
 	ldh [hConsoleType], a
 
+_Reset::
 ; clear first 2 pages of WRAM
 	ld hl, $C000
 	ld bc, $0200
@@ -212,7 +217,7 @@ Test_HelloWorld:
 ; draw a string
 	ld de, Str_HelloWorld
 	hlcoord 1, 1
-	call StrCpy
+	call PrintString
 
 ; enable vblank interrupt
 	ld a, (1 << VBLANK)
@@ -226,69 +231,39 @@ Test_HelloWorld:
 .mainloop
 	call DelayFrame
 	call .handle_joypad
+
+	hlcoord 1, 9
+	ld bc, 5
+	ld a, " "
+	call MemFill
+
+	ld de, wHelloWorldNum1
+	hlcoord 1, 9
+	ld b, (1 << F_PRINTNUM_LALIGN) | PRINTNUM_2BYTE
+	call PrintNum
+
 	jr .mainloop
 
 .handle_joypad
-	ld c, LOW(hJoypadHeld)
-	ldh a, [c]
-	bit F_D_DOWN, a
-	call nz, .dpad_down
-	ldh a, [c]
-	bit F_D_UP, a
-	call nz, .dpad_up
-	ldh a, [c]
-	bit F_D_LEFT, a
-	call nz, .dpad_left
-	ldh a, [c]
-	bit F_D_RIGHT, a
-	call nz, .dpad_right
+	ldh a, [hJoypadDown]
+	and A_BUTTON
+	jr nz, .a_button
 	ret
 
-.dpad_down
-	ldh a, [hScrollSpeedY]
-	and a
+.a_button
+	ld a, [wHelloWorldNum1]
+	inc a
+	ld [wHelloWorldNum1], a
 	ret nz
-	ldh a, [hScrollTargetY]
-	add 8
-	ldh [hScrollTargetY], a
-	ld a, 3
-	ldh [hScrollSpeedY], a
-	ret
-
-.dpad_up
-	ldh a, [hScrollSpeedY]
-	and a
-	ret nz
-	ldh a, [hScrollTargetY]
-	sub 8
-	ldh [hScrollTargetY], a
-	ld a, -3
-	ldh [hScrollSpeedY], a
-	ret
-
-.dpad_left
-	ldh a, [hScrollSpeedX]
-	and a
-	ret nz
-	ldh a, [hScrollTargetX]
-	sub 8
-	ldh [hScrollTargetX], a
-	ld a, -1
-	ldh [hScrollSpeedX], a
-	ret
-
-.dpad_right
-	ldh a, [hScrollSpeedX]
-	and a
-	ret nz
-	ldh a, [hScrollTargetX]
-	add 8
-	ldh [hScrollTargetX], a
-	ld a, 1
-	ldh [hScrollSpeedX], a
+	ld a, [wHelloWorldNum1 + 1]
+	inc a
+	ld [wHelloWorldNum1 + 1], a
 	ret
 
 Str_HelloWorld:
-	str "Hello, world!"
+	str "Hello, world!\n\nWelcome to\nthe game :D\n\nPress \"A\" to make\nthe number go up."
 
 AsciiFont: INCBIN "gfx/ascii_font.1bpp"
+
+INCLUDE "home/math.asm"
+INCLUDE "home/string.asm"

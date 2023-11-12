@@ -7,3 +7,4 @@ tools/scan_includes
 *.1bpp
 *.2bpp
 test.py
+*.sna

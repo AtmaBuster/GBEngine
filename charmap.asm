@@ -1,7 +1,5 @@
 ; ASCII
-	charmap "\t", $09
 	charmap "\n", $0A
-	charmap "\r", $0D
 	charmap " ", $20
 	charmap "!", $21
 	charmap "\"", $22

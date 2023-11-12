@@ -10,6 +10,7 @@ hJoypadUp::   db ; released this frame
 hJoypadHeld:: db ; held down
 
 hVBlank:: db ; VBlank sets this to 1
+hUseLCDInt:: db
 
 hCopyWRAMTileMap:: db
 hBGMapThird:: db
@@ -24,3 +25,10 @@ hScrollSpeedY:: db
 
 assert hScrollSpeedX == hScrollTargetX + 1
 assert hScrollSpeedY == hScrollTargetY + 1
+
+UNION
+
+hPrintNumBuffer:: ds 3
+hPrintNumDivBuffer:: ds 3
+
+ENDU

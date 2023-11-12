@@ -1,3 +1,5 @@
+; syntax
+
 MACRO lb ; r, hi, lo
 	ld \1, ((\2) & $FF) << 8 | ((\3) & $FF)
 ENDM

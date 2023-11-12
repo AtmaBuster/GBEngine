@@ -163,11 +163,25 @@ VBlank_HandleScroll:
 .set_scroll
 	ld c, e
 	ldh [c], a
-	ld a, d
-	cp b
+	cp d
 	ret nz
 	ld c, l
 .done_scroll
 	xor a
 	ldh [c], a
 	ret
+
+LCD:
+	ldh a, [hUseLCDInt]
+	and a
+	jr z, .exit
+	push hl
+	push de
+	push bc
+
+	pop bc
+	pop de
+	pop hl
+.exit
+	pop af
+	reti
