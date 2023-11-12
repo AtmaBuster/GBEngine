@@ -60,7 +60,10 @@ F_PRINTNUM_COMMASEP EQU 6
 ;       de - *number
 ;       hl - destination
 ;   output
-;       ???
+;       a  - last char copied
+;       c  - varies
+;       de - left end of string in wPrintNumBuffer
+;       hl - left of last tile in destination
 PrintNum:
 	push hl
 ; clear hPrintNumBuffer
