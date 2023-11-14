@@ -266,12 +266,12 @@ Test_HelloWorld:
 	ldh [hMultiplier], a
 	call Multiply
 
-	ld a, 81
+	ld a, 7
 	ldh [hDivisor], a
 	ld b, 4
 	call Divide
 
-	ld a, 7
+	ld a, 81
 	ldh [hDivisor], a
 	ld b, 4
 	call Divide
@@ -279,6 +279,15 @@ Test_HelloWorld:
 	ldh a, [hDividend + 3]
 	add 5
 	ldh [hDividend + 3], a
+	ldh a, [hDividend + 2]
+	adc 0
+	ldh [hDividend + 2], a
+	ldh a, [hDividend + 1]
+	adc 0
+	ldh [hDividend + 1], a
+	ldh a, [hDividend + 0]
+	adc 0
+	ldh [hDividend + 0], a
 	ld a, 10
 	ldh [hDivisor], a
 	ld b, 4

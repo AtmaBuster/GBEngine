@@ -9,3 +9,4 @@ tools/scan_includes
 test.py
 *.sna
 *.gbc
+*.sn1
