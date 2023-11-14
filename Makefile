@@ -29,6 +29,7 @@ endif
 
 game_obj := \
 home.o \
+main.o \
 ram.o
 
 RGBDS ?=

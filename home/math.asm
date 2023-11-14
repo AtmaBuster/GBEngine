@@ -51,3 +51,49 @@ SDivide:
 
 .divide_by_zero
 	jr @
+
+; ================================================
+; Multiply
+; ================================================
+; Takes the 3-byte, big-endian value in hMultiplicand, multiplies it by
+;     the 1-byte value in hMultiplier, and returns it as a 4-byte,
+;     big-endian value in hProduct
+; ================================================
+;   input
+;       actual values are in hMultiplier and hMultiplicand
+;   output
+;       a  - Current ROM Bank
+Multiply:
+	push bc
+	push hl
+
+	farcall _Multiply
+
+	pop hl
+	pop bc
+	ret
+
+; ================================================
+; Divide
+; ================================================
+; Takes the 4-byte, big-endian value in hDividend, divides it by the
+;     1-byte value in hDivisor, and return the quotient as a 4-byte,
+;     big-endian value in hQuotient, and the remainder as a 1-byte
+;     value in hRemainder
+; ================================================
+;   input
+;       b  - precision
+;       actual values are in hDivisor and hDividend
+;   output
+;       a  - Current ROM Bank
+Divide:
+	push bc
+	push de
+	push hl
+
+	farcall _Divide
+
+	pop hl
+	pop de
+	pop bc
+	ret

@@ -138,6 +138,7 @@ ENDR
 
 	ret
 
+; TODO - better register management (?)
 VBlank_HandleScroll:
 	lb de, LOW(hScrollTargetX), LOW(rSCX)
 	call .handle_scroll

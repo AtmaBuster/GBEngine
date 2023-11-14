@@ -1,3 +1,13 @@
+INCLUDE "macros/text.asm"
+
+; calls
+
+MACRO farcall
+	ld a, BANK(\1)
+	ld hl, \1
+	rst FarCall
+ENDM
+
 ; syntax
 
 MACRO lb ; r, hi, lo
@@ -7,6 +17,154 @@ ENDM
 MACRO ln ; r, hi, lo
 	ld \1, ((\2) & $F) << 4 | ((\3) & $F)
 ENDM
+
+; helpers
+
+MACRO load_multiplicand
+; args
+;     num. bytes
+;     value
+; if num. bytes = 0, value will be treated as an immediate
+; otherwise, load num. bytes from value (little endian) to hMultiplicand
+IF \1 == 0
+	ld a, (\2 >> 16)
+	ldh [hMultiplicand], a
+	ld a, (\2 >> 8) & $FF
+	ldh [hMultiplicand + 1], a
+	ld a, \2 & $FF
+	ldh [hMultiplicand + 2], a
+ELSE
+
+IF \1 == 1
+	xor a
+	ldh [hMultiplicand], a
+	ldh [hMultiplicand + 1], a
+	ld a, [\2]
+	ldh [hMultiplicand + 2], a
+ELIF \1 == 2
+	xor a
+	ldh [hMultiplicand], a
+	ld a, [\2 + 1]
+	ldh [hMultiplicand + 1], a
+	ld a, [\2]
+	ldh [hMultiplicand + 2], a
+ELSE
+	ld a, [\2 + 2]
+	ldh [hMultiplicand], a
+	ld a, [\2 + 1]
+	ldh [hMultiplicand + 1], a
+	ld a, [\2]
+	ldh [hMultiplicand + 2], a
+ENDC
+
+ENDC
+
+ENDM
+
+MACRO load_product
+; args
+;     num. bytes (max 4)
+;     location
+; copies num. bytes from hProduct (big-endian) to location (little-endian)
+IF \1 >= 1
+	ldh a, [hProduct + 3]
+	ld [\2], a
+IF \1 >= 2
+	ldh a, [hProduct + 2]
+	ld [\2 + 1], a
+IF \1 >= 3
+	ldh a, [hProduct + 1]
+	ld [\2 + 2], a
+IF \1 >= 4
+	ldh a, [hProduct]
+	ld [\2 + 3], a
+ENDC
+ENDC
+ENDC
+ENDC
+ENDM
+
+MACRO load_dividend
+; args
+;     num. bytes (max 4)
+;     value
+; if num. bytes = 0, value will be treated as an immediate
+; otherwise, load num. bytes from value (little endian) to the hDividend
+IF \1 == 0
+	ld a, (\2 >> 24)
+	ldh [hDividend], a
+	ld a, (\2 >> 16) & $FF
+	ldh [hDividend + 1], a
+	ld a, (\2 >> 8) & $FF
+	ldh [hDividend + 2], a
+	ld a, \2 & $FF
+	ldh [hDividend + 3], a
+ELSE
+
+IF \1 == 1
+	xor a
+	ldh [hDividend], a
+	ldh [hDividend + 1], a
+	ldh [hDividend + 2], a
+	ld a, [\2]
+	ldh [hDividend + 3], a
+ELIF \1 == 2
+	xor a
+	ldh [hDividend], a
+	ldh [hDividend + 1], a
+	ld a, [\2 + 1]
+	ldh [hDividend + 2], a
+	ld a, [\2]
+	ldh [hDividend + 3], a
+ELIF \1 == 3
+	xor a
+	ldh [hDividend], a
+	ld a, [\2 + 2]
+	ldh [hDividend + 1], a
+	ld a, [\2 + 1]
+	ldh [hDividend + 2], a
+	ld a, [\2]
+	ldh [hDividend + 3], a
+ELSE
+	ld a, [\2 + 3]
+	ldh [hDividend], a
+	ld a, [\2 + 2]
+	ldh [hDividend + 1], a
+	ld a, [\2 + 1]
+	ldh [hDividend + 2], a
+	ld a, [\2]
+	ldh [hDividend + 3], a
+ENDC
+
+ENDC
+
+ENDM
+
+MACRO load_quotient
+; args
+;     num. bytes (max 4)
+;     location
+; copies num. bytes from hQuotient (big-endian) to location (little-endian)
+IF \1 >= 1
+	ldh a, [hQuotient + 3]
+	ld [\2], a
+IF \1 >= 2
+	ldh a, [hQuotient + 2]
+	ld [\2 + 1], a
+IF \1 >= 3
+	ldh a, [hQuotient + 1]
+	ld [\2 + 2], a
+IF \1 >= 4
+	ldh a, [hQuotient]
+	ld [\2 + 3], a
+ENDC
+ENDC
+ENDC
+ENDC
+ENDM
+
+
+
 
 MACRO RGB
 rept _NARG / 3
@@ -18,12 +176,6 @@ ENDM
 palred   EQUS "(1 << 0) *"
 palgreen EQUS "(1 << 5) *"
 palblue  EQUS "(1 << 10) *"
-
-MACRO farcall
-	ld a, BANK(\1)
-	ld hl, \1
-	rst Farcall
-ENDM
 
 hlcoord EQUS "coord hl,"
 bccoord EQUS "coord bc,"
@@ -54,11 +206,6 @@ ENDM
 MACRO dba
 	db BANK(\1)
 	dw \1
-ENDM
-
-MACRO str
-	db \1
-	db 0
 ENDM
 
 ; enumerate constants

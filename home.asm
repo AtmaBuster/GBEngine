@@ -2,19 +2,21 @@ INCLUDE "constants.asm"
 INCLUDE "charmap.asm"
 
 SECTION "Vectors", ROM0[$0000]
-_rst00:
 Reset:
 	jp _Reset
 
 	ds $08 - @
-_rst08:
 BankSwitch:
 	ld [MBC5RomBank], a
+	ldh [hROMBank], a
 	ret
 
 	ds $10 - @
-_rst10:
-	ret
+FarCall:
+	ldh [hFarCallStoreA], a
+	ldh a, [hROMBank]
+	push af
+	jp _FarCall
 
 	ds $18 - @
 _rst18:
@@ -60,6 +62,8 @@ _Serial:
 	ds $60 - @
 _Joypad:
 	reti
+
+SECTION "Low ROM", ROM0[$0061]
 
 INCLUDE "home/copy.asm"
 INCLUDE "home/lcd_onoff.asm"
@@ -170,6 +174,10 @@ _Reset::
 
 .skip_clear_cgb_vram
 
+; load bank 1 by default
+	ld a, 1
+	rst BankSwitch
+
 	jp Test_HelloWorld
 
 INCLUDE "home/interrupt.asm"
@@ -232,38 +240,182 @@ Test_HelloWorld:
 	call DelayFrame
 	call .handle_joypad
 
-	hlcoord 1, 9
-	ld bc, 5
+	hlcoord 0, 10
+	ld bc, SCREEN_WIDTH * 4
 	ld a, " "
 	call MemFill
 
-	ld de, wHelloWorldNum1
-	hlcoord 1, 9
-	ld b, (1 << F_PRINTNUM_LALIGN) | PRINTNUM_2BYTE
+	hlcoord 2, 11
+	ld a, [wHelloWorld_Cursor]
+	cp 4
+	jr nz, .got_cursor_pos
+	inc a
+.got_cursor_pos
+	ld c, a
+	ld b, 0
+	add hl, bc
+	ld [hl], "^"
+
+	load_multiplicand 2, wHelloWorld_Input
+
+	ld a, 100
+	ldh [hMultiplier], a
+	call Multiply
+
+	ld a, 125
+	ldh [hMultiplier], a
+	call Multiply
+
+	ld a, 81
+	ldh [hDivisor], a
+	ld b, 4
+	call Divide
+
+	ld a, 7
+	ldh [hDivisor], a
+	ld b, 4
+	call Divide
+
+	ldh a, [hDividend + 3]
+	add 5
+	ldh [hDividend + 3], a
+	ld a, 10
+	ldh [hDivisor], a
+	ld b, 4
+	call Divide
+
+	ld a, 10
+	ldh [hDivisor], a
+	ld b, 4
+	call Divide
+
+	load_quotient 2, wHelloWorld_Output
+	ldh a, [hRemainder]
+	ld [wHelloWorld_OutputR], a
+
+	ld de, wHelloWorld_Input
+	hlcoord 2, 10
+	ld b, PRINTNUM_2BYTE
 	call PrintNum
 
-	jr .mainloop
+	ld de, wHelloWorld_Output
+	hlcoord 1, 13
+	ld b, PRINTNUM_2BYTE
+	call PrintNum
+
+	hlcoord 6, 13
+	ld [hl], "."
+	ld de, wHelloWorld_OutputR
+	hlcoord 7, 13
+	ld b, PRINTNUM_1BYTE | (1 << F_PRINTNUM_LALIGN)
+	call PrintNum
+
+	hlcoord 6, 10
+	ld a, [hli]
+	ld [hld], a
+	ld [hl], "."
+	dec hl
+	ld a, [hl]
+	cp " "
+	jr nz, .ok_space
+	ld [hl], "0"
+.ok_space
+	hlcoord 9, 10
+	ld a, "k"
+	ld [hli], a
+	ld a, "g"
+	ld [hl], a
+
+	hlcoord 9, 13
+	ld a, "l"
+	ld [hli], a
+	ld a, "b"
+	ld [hli], a
+	ld a, "s"
+	ld [hl], a
+
+	jp .mainloop
 
 .handle_joypad
 	ldh a, [hJoypadDown]
-	and A_BUTTON
-	jr nz, .a_button
+	bit F_D_LEFT, a
+	jr nz, .left
+	bit F_D_RIGHT, a
+	jr nz, .right
+	bit F_D_UP, a
+	jr nz, .up
+	bit F_D_DOWN, a
+	jr nz, .down
 	ret
 
-.a_button
-	ld a, [wHelloWorldNum1]
-	inc a
-	ld [wHelloWorldNum1], a
-	ret nz
-	ld a, [wHelloWorldNum1 + 1]
-	inc a
-	ld [wHelloWorldNum1 + 1], a
+.up
+	ld b, 0
+	jr .change_value
+
+.down
+	ld b, 2
+.change_value
+	ld a, [wHelloWorld_Cursor]
+	add a
+	add a
+	add b
+	ld c, a
+	ld b, 0
+	ld hl, .diff_table
+	add hl, bc
+	ld a, [hli]
+	ld h, [hl]
+	ld l, a
+	ld a, [wHelloWorld_Input]
+	ld c, a
+	ld a, [wHelloWorld_Input + 1]
+	ld b, a
+	add hl, bc
+	ld a, l
+	ld [wHelloWorld_Input], a
+	ld a, h
+	ld [wHelloWorld_Input + 1], a
 	ret
+
+.right
+	ld a, [wHelloWorld_Cursor]
+	inc a
+	cp 5
+	jr nz, .set_cursor
+	xor a
+	jr .set_cursor
+
+.left
+	ld a, [wHelloWorld_Cursor]
+	dec a
+	cp -1
+	jr nz, .set_cursor
+	ld a, 4
+.set_cursor
+	ld [wHelloWorld_Cursor], a
+	ret
+
+.diff_table
+	dw 10000, -10000
+	dw 1000,  -1000
+	dw 100,   -100
+	dw 10,    -10
+	dw 1,     -1
 
 Str_HelloWorld:
-	str "Hello, world!\n\nWelcome to\nthe game :D\n\nPress \"A\" to make\nthe number go up."
+	text "This is a test of"
+	line "the math routines."
+	line
+	line "It converts from"
+	line "kg to lbs."
+	line
+	line "Change the number"
+	line "with the D-pad."
+	text_end
+	;~ str "Hello, world!\n\nWelcome to\nthe game :D\n\nPress \"A\" to make\nthe number go up."
 
 AsciiFont: INCBIN "gfx/ascii_font.1bpp"
 
 INCLUDE "home/math.asm"
 INCLUDE "home/string.asm"
+INCLUDE "home/call.asm"

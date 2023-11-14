@@ -1,7 +1,10 @@
+
 SECTION "HRAM", HRAM
 
 hConsoleType:: db
 hROMBank:: db
+
+hFarCallStoreA:: db
 
 hSPStore:: dw
 
@@ -14,9 +17,6 @@ hUseLCDInt:: db
 
 hCopyWRAMTileMap:: db
 hBGMapThird:: db
-IF CGB_SUPPORT == 1
-hWhichMap:: db
-ENDC
 
 hScrollTargetX:: db
 hScrollSpeedX:: db
@@ -30,5 +30,32 @@ UNION
 
 hPrintNumBuffer:: ds 3
 hPrintNumDivBuffer:: ds 3
+
+NEXTU
+
+UNION
+; Multiply input
+	ds 1
+hMultiplicand:: ds 3
+hMultiplier::   db
+
+NEXTU
+; Multiply output
+hProduct:: ds 4
+
+NEXTU
+; Divide input
+hDividend:: ds 4
+hDivisor::  db
+
+NEXTU
+; Divide output
+hQuotient::  ds 4
+hRemainder:: db
+
+ENDU
+
+; math work
+hMathBuffer:: ds 5
 
 ENDU
