@@ -8,3 +8,4 @@ tools/scan_includes
 *.2bpp
 test.py
 *.sna
+*.gbc

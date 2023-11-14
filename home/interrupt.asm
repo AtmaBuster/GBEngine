@@ -17,6 +17,7 @@ VBlank_CopyTileAndAttrMap:
 	ldh a, [hCopyWRAMTileMap]
 	and a
 	ret z
+
 	ldh a, [hBGMapThird]
 	inc a
 	cp 3
@@ -24,22 +25,30 @@ VBlank_CopyTileAndAttrMap:
 	xor a
 .got_map_third
 	ldh [hBGMapThird], a
+
 IF CGB_SUPPORT == 1
-	push af
-	ldh a, [hWhichMap]
-	xor 1
-	ldh [hWhichMap], a
-	ld bc, wTileMap
-	jr z, .got_which_map
-	ld bc, wAttrMap
-.got_which_map
+	call .CopyTileMap
+	jr .CopyAttrMap
+
+.CopyTileMap
+	xor a
 	ldh [rVBK], a
-	pop af
+	ld bc, wTileMap
+	jr .CopyMapThird
+
+.CopyAttrMap
+	ldh a, [hConsoleType]
+	cp HW_CGB
+	ret c
+	ld a, 1
+	ldh [rVBK], a
+	ld bc, wAttrMap
 ELSE
 	ld bc, wTileMap
 ENDC
 
 .CopyMapThird:
+	ldh a, [hBGMapThird]
 	ld hl, 0
 	ld de, $9800
 	and a

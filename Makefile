@@ -17,6 +17,16 @@ SGB_SUPPORT = false
 
 # Don't edit below unless you know what you're doing
 
+ifeq ($(CGB_ONLY), true)
+ROM_TYPE = gbc
+else ifeq ($(CGB_SUPPORT), true)
+ROM_TYPE = gbc
+else ifeq ($(SGB_SUPPORT), true)
+ROM_TYPE = sgb
+else
+ROM_TYPE = gb
+endif
+
 game_obj := \
 home.o \
 ram.o
@@ -30,13 +40,13 @@ RGBLINK ?= $(RGBDS)rgblink
 .PHONY: all clean tidy
 
 all: game
-game: $(ROM_NAME).gb
+game: $(ROM_NAME).$(ROM_TYPE)
 
 clean: tidy
 	find gfx \( -name "*.[12]bpp" \) -delete
 
 tidy:
-	rm -f $(ROM_NAME).gb $(game_obj) $(ROM_NAME).map $(ROM_NAME).sym
+	rm -f $(ROM_NAME).gb $(ROM_NAME).sgb $(ROM_NAME).gbc $(game_obj) $(ROM_NAME).map $(ROM_NAME).sym
 	$(MAKE) clean -C tools/
 
 tools:
@@ -86,7 +96,7 @@ $(foreach obj, $(game_obj), $(eval $(call DEP,$(obj),$(obj:.o=.asm))))
 
 endif
 
-$(ROM_NAME).gb: $(game_obj) layout.link
+$(ROM_NAME).$(ROM_TYPE): $(game_obj) layout.link
 	$(RGBLINK) -n $(ROM_NAME).sym -m $(ROM_NAME).map -l layout.link -o $@ $(filter %.o,$^)
 	$(RGBFIX) $(fix_opt) $@
 
