@@ -163,6 +163,10 @@ ENDC
 ENDC
 ENDM
 
+; ram
+MACRO bitfield
+	ds (\1 + 7) / 8
+ENDM
 
 
 

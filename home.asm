@@ -355,6 +355,8 @@ Test_HelloWorld:
 	jr nz, .up
 	bit F_D_DOWN, a
 	jr nz, .down
+	bit F_A_BUTTON, a
+	jr nz, .a_button
 	ret
 
 .up
@@ -411,6 +413,30 @@ Test_HelloWorld:
 	dw 10,    -10
 	dw 1,     -1
 
+.a_button
+	ld a, [wHelloWorld_Input]
+	ld e, a
+	ld a, [wHelloWorld_Input + 1]
+	ld d, a
+
+	cp HIGH(300)
+	jr c, .got_flag
+	ret nz
+	ld a, e
+	cp LOW(300)
+	ret nc
+.got_flag
+	ld hl, wHelloWorld_Flags
+	ldh a, [hJoypadHeld]
+	and SELECT
+	jr z, .no_select
+	call ClearFlag
+	ret
+
+.no_select
+	call SetFlag
+	ret
+
 Str_HelloWorld:
 	text "This is a test of"
 	line "the math routines."
@@ -428,3 +454,4 @@ AsciiFont: INCBIN "gfx/ascii_font.1bpp"
 INCLUDE "home/math.asm"
 INCLUDE "home/string.asm"
 INCLUDE "home/call.asm"
+INCLUDE "home/flag.asm"

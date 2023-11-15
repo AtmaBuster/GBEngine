@@ -1,0 +1,5 @@
+; FlagAction
+
+FLAG_SET EQU 0
+FLAG_CLR EQU 1
+FLAG_CHK EQU 2

@@ -1,4 +1,6 @@
-INCLUDE "hardware_constants.asm"
+INCLUDE "constants/hardware_constants.asm"
+INCLUDE "constants/function_constants.asm"
+
 INCLUDE "macros.asm"
 
 INCLUDE "ram/constants.asm"

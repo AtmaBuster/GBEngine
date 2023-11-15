@@ -29,3 +29,5 @@ wHelloWorld_Input:: dw
 wHelloWorld_Output:: ds 2
 wHelloWorld_OutputR:: db
 wHelloWorld_Cursor:: db
+
+wHelloWorld_Flags:: bitfield 300
