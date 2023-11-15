@@ -1,4 +1,3 @@
-
 SECTION "HRAM", HRAM
 
 hConsoleType:: db

@@ -1,3 +1,5 @@
+IF FONT_USE_ASCII_ORDER
+FIRST_PRINTABLE_CHAR EQU $20
 ; ASCII
 	charmap "\n", $0A
 	charmap " ", $20
@@ -95,6 +97,7 @@
 	charmap "|", $7C
 	charmap "}", $7D
 	charmap "~", $7E
+IF FONT_USE_EXTENDED_ASCII
 ; selection of CP-1252
 	charmap "€", $80
 	charmap "‚", $2C ; same tile
@@ -232,3 +235,77 @@
 	charmap "■", $BC
 	charmap "■", $BD
 	charmap "■", $BE
+ENDC
+ELSE
+FIRST_PRINTABLE_CHAR EQU $01
+
+	charmap "A", $01
+	charmap "B", $02
+	charmap "C", $03
+	charmap "D", $04
+	charmap "E", $05
+	charmap "F", $06
+	charmap "G", $07
+	charmap "H", $08
+	charmap "I", $09
+	charmap "J", $0A
+	charmap "K", $0B
+	charmap "L", $0C
+	charmap "M", $0D
+	charmap "N", $0E
+	charmap "O", $0F
+	charmap "P", $10
+	charmap "Q", $11
+	charmap "R", $12
+	charmap "S", $13
+	charmap "T", $14
+	charmap "U", $15
+	charmap "V", $16
+	charmap "W", $17
+	charmap "X", $18
+	charmap "Y", $19
+	charmap "Z", $1A
+	charmap "a", $01
+	charmap "b", $02
+	charmap "c", $03
+	charmap "d", $04
+	charmap "e", $05
+	charmap "f", $06
+	charmap "g", $07
+	charmap "h", $08
+	charmap "i", $09
+	charmap "j", $0A
+	charmap "k", $0B
+	charmap "l", $0C
+	charmap "m", $0D
+	charmap "n", $0E
+	charmap "o", $0F
+	charmap "p", $10
+	charmap "q", $11
+	charmap "r", $12
+	charmap "s", $13
+	charmap "t", $14
+	charmap "u", $15
+	charmap "v", $16
+	charmap "w", $17
+	charmap "x", $18
+	charmap "y", $19
+	charmap "z", $1A
+
+	charmap "^", $1B
+	charmap ".", $1C
+	charmap ",", $1D
+	charmap "-", $1E
+	charmap "\n", $1F
+	charmap "0", $20
+	charmap "1", $21
+	charmap "2", $22
+	charmap "3", $23
+	charmap "4", $24
+	charmap "5", $25
+	charmap "6", $26
+	charmap "7", $27
+	charmap "8", $28
+	charmap "9", $29
+	charmap " ", $2A
+ENDC

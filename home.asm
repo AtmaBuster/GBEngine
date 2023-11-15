@@ -1,5 +1,4 @@
 INCLUDE "constants.asm"
-INCLUDE "charmap.asm"
 
 SECTION "Vectors", ROM0[$0000]
 Reset:
@@ -192,10 +191,7 @@ Test_HelloWorld:
 	call DisableLCD
 
 ; copy font graphics to VRAM
-	ld hl, $8200
-	ld b, 16 * 14
-	ld de, AsciiFont
-	call MemCpy1BPP
+	call LoadFont
 ; if on CGB, set up simple palettes
 	ldh a, [hConsoleType]
 	cp HW_CGB
@@ -449,9 +445,8 @@ Str_HelloWorld:
 	text_end
 	;~ str "Hello, world!\n\nWelcome to\nthe game :D\n\nPress \"A\" to make\nthe number go up."
 
-AsciiFont: INCBIN "gfx/ascii_font.1bpp"
-
 INCLUDE "home/math.asm"
 INCLUDE "home/string.asm"
 INCLUDE "home/call.asm"
 INCLUDE "home/flag.asm"
+INCLUDE "home/font.asm"

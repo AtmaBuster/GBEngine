@@ -1,3 +1,6 @@
+INCLUDE "build_constants.asm"
+INCLUDE "charmap.asm"
+
 INCLUDE "constants/hardware_constants.asm"
 INCLUDE "constants/function_constants.asm"
 
