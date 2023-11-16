@@ -73,7 +73,7 @@ INCLUDE "home/simple_math.asm"
 
 	ds $ED - @
 
-; Build time
+BuildString:
 PUSHC
 SETCHARMAP ascii
 	db STRFMT("%04u-%02u-%02u %02u:%02u:%02u", __UTC_YEAR__, __UTC_MONTH__, __UTC_DAY__, __UTC_HOUR__, __UTC_MINUTE__, __UTC_SECOND__)
