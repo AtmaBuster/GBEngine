@@ -3,8 +3,6 @@ SECTION "HRAM", HRAM
 hConsoleType:: db
 hROMBank:: db
 
-hFarCallStoreA:: db
-
 hSPStore:: dw
 
 hJoypadDown:: db ; pressed this frame

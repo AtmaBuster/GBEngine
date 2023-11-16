@@ -83,34 +83,6 @@ MemCpy1BPP:
 	ret
 
 ; ================================================
-; MemCpy2BPP
-; ================================================
-; copies <b> tiles of 2bpp graphics data from <de> to <hl>
-; ================================================
-;   input
-;       b  - num. tiles
-;       de - source
-;       hl - destination
-;   output
-;       a  - last byte copied
-;       bc - 0
-;       de - de.in + b.in * 16
-;       hl - hl.in + b.in * 16
-MemCpy2BPP:
-.tile_loop
-	ld c, 16
-.put
-	ld a, [de]
-	inc de
-	ld [hli], a
-.loop
-	dec c
-	jr nz, .put
-	dec b
-	jr nz, .tile_loop
-	ret
-
-; ================================================
 ; StrCpy
 ; ================================================
 ; copies a "\0" terminated string from <de> to <hl>

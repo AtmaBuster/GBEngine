@@ -12,9 +12,10 @@ BankSwitch:
 
 	ds $10 - @
 FarCall:
-	ldh [hFarCallStoreA], a
-	ldh a, [hROMBank]
 	push af
+	push af
+	push hl
+	ld hl, sp+5
 	jp _FarCall
 
 	ds $18 - @
@@ -69,6 +70,14 @@ INCLUDE "home/lcd_onoff.asm"
 INCLUDE "home/speed.asm"
 INCLUDE "home/delay.asm"
 INCLUDE "home/simple_math.asm"
+
+	ds $ED - @
+
+; Build time
+PUSHC
+SETCHARMAP ascii
+	db STRFMT("%04u-%02u-%02u %02u:%02u:%02u", __UTC_YEAR__, __UTC_MONTH__, __UTC_DAY__, __UTC_HOUR__, __UTC_MINUTE__, __UTC_SECOND__)
+POPC
 
 SECTION "Home", ROM0[$0100]
 
@@ -353,6 +362,8 @@ Test_HelloWorld:
 	jr nz, .down
 	bit F_A_BUTTON, a
 	jr nz, .a_button
+	bit F_B_BUTTON, a
+	jr nz, .b_button
 	ret
 
 .up
@@ -431,6 +442,10 @@ Test_HelloWorld:
 
 .no_select
 	call SetFlag
+	ret
+
+.b_button
+	call Audio_Test
 	ret
 
 Str_HelloWorld:
