@@ -1,4 +1,4 @@
-VBlank:
+VBlank::
 	call VBlank_CopyTileAndAttrMap
 	call Random
 	call Joypad
@@ -13,7 +13,7 @@ VBlank:
 	pop af
 	reti
 
-VBlank_CopyTileAndAttrMap:
+VBlank_CopyTileAndAttrMap::
 	ldh a, [hCopyWRAMTileMap]
 	and a
 	ret z
@@ -87,11 +87,11 @@ ENDR
 
 	ret
 
-Random:
+Random::
 ; NYI
 	ret
 
-Joypad:
+Joypad::
 ; get D-Pad
 	ld a, R_DPAD
 	ldh [rJOYP], a
@@ -139,7 +139,7 @@ ENDR
 	ret
 
 ; TODO - better register management (?)
-VBlank_HandleScroll:
+VBlank_HandleScroll::
 	lb de, LOW(hScrollTargetX), LOW(rSCX)
 	call .handle_scroll
 	lb de, LOW(hScrollTargetY), LOW(rSCY)
@@ -181,7 +181,7 @@ VBlank_HandleScroll:
 	ldh [c], a
 	ret
 
-LCD:
+LCD::
 	ldh a, [hUseLCDInt]
 	and a
 	jr z, .exit

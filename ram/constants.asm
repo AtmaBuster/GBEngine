@@ -10,3 +10,7 @@ tiles     EQUS " * $10"
 
 tile1bpp  EQUS " + $08 * "
 tiles1bpp EQUS " * $08"
+
+; for hCrashType
+ERR_RST38 EQU 0
+ERR_DIV0  EQU 1

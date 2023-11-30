@@ -11,7 +11,7 @@
 ;       bc - varies
 ;       de - de.in + <length of string>
 ;       hl - left of last printed line
-PrintString:
+PrintString::
 	push hl
 .char_loop
 	ld a, [de]
@@ -64,7 +64,7 @@ F_PRINTNUM_COMMASEP EQU 6
 ;       c  - varies
 ;       de - left end of string in wPrintNumBuffer
 ;       hl - left of last tile in destination
-PrintNum:
+PrintNum::
 	push hl
 ; clear hPrintNumBuffer
 	xor a

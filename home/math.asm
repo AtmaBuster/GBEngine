@@ -8,7 +8,7 @@
 ;       c  - multiplicand
 ;   output
 ;       a  - product % 256
-SMultiply:
+SMultiply::
 	and a
 	ret z
 
@@ -33,12 +33,12 @@ SMultiply:
 ;   output
 ;       a  - remainder
 ;       b  - quotient
-SDivide:
+SDivide::
 ; divide-by-zero check
 	ld b, a
 	ld a, c
 	and a
-	jr z, .divide_by_zero
+	jp z, Crash_div0
 	ld a, b
 	ld b, 0
 .loop
@@ -48,9 +48,6 @@ SDivide:
 	dec b
 	add c
 	ret
-
-.divide_by_zero
-	jr @
 
 ; ================================================
 ; Multiply
@@ -63,7 +60,7 @@ SDivide:
 ;       actual values are in hMultiplier and hMultiplicand
 ;   output
 ;       a  - Current ROM Bank
-Multiply:
+Multiply::
 	push bc
 	push hl
 
@@ -86,7 +83,7 @@ Multiply:
 ;       actual values are in hDivisor and hDividend
 ;   output
 ;       a  - Current ROM Bank
-Divide:
+Divide::
 	push bc
 	push de
 	push hl

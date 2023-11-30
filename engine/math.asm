@@ -50,6 +50,12 @@ ENDR
 	ret
 
 _Divide::
+; divide-by-zero check
+	ldh a, [hDivisor]
+	and a
+	jp z, Crash_div0
+
+; A-ok
 	ld e, 9
 
 ; clear used memory

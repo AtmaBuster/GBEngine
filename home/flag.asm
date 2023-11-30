@@ -12,7 +12,7 @@
 ;       c  - 1 << (de.in / 8)
 ;       de - de.in / 8
 ;       hl - hl.in + de.in / 8
-SetFlag:
+SetFlag::
 	ld b, FLAG_SET
 	jr FlagAction
 
@@ -30,7 +30,7 @@ SetFlag:
 ;       c  - 1 << (de.in / 8)
 ;       de - de.in / 8
 ;       hl - hl.in + de.in / 8
-ClearFlag:
+ClearFlag::
 	ld b, FLAG_CLR
 	jr FlagAction
 
@@ -48,7 +48,7 @@ ClearFlag:
 ;       c  - 1 << (de.in / 8)
 ;       de - de.in / 8
 ;       hl - hl.in + de.in / 8
-CheckFlag:
+CheckFlag::
 	ld b, FLAG_CHK
 
 ; ================================================
@@ -65,7 +65,7 @@ CheckFlag:
 ;       c  - 1 << (de.in / 8)
 ;       de - de.in / 8
 ;       hl - hl.in + de.in / 8
-FlagAction:
+FlagAction::
 ; get bit-in-byte
 	ld a, e
 	and %111

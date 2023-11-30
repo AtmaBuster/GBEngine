@@ -3,7 +3,7 @@
 ;	push af
 ;	push hl
 ;	ld hl, sp+5
-_FarCall:
+_FarCall::
 	ldh a, [hROMBank]
 	ld [hl], a
 	pop hl

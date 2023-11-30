@@ -7,7 +7,7 @@
 ;   output
 ;       a  - 144
 ;       hl - rLCDC
-DisableLCD:
+DisableLCD::
 	ld hl, rLCDC
 	bit rLCDC_ENABLE, [hl]
 	ret z
@@ -28,7 +28,7 @@ DisableLCD:
 ;   input  - none
 ;   output
 ;       hl - rLCDC
-EnableLCD:
+EnableLCD::
 	ld hl, rLCDC
 	set rLCDC_ENABLE, [hl]
 	ret

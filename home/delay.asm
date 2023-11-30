@@ -6,7 +6,7 @@
 ;   input  - none
 ;   output
 ;       a  = 0
-DelayFrame:
+DelayFrame::
 .loop
 	halt
 	nop
@@ -27,7 +27,7 @@ DelayFrame:
 ;   output
 ;     a  = 0
 ;     a  = c
-DelayFrames:
+DelayFrames::
 .loop
 	call DelayFrame
 	dec c

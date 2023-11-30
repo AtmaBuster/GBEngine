@@ -25,6 +25,19 @@ assert hScrollSpeedY == hScrollTargetY + 1
 
 UNION
 
+hWkBuffer::
+
+NEXTU
+
+hCrashStoreAF:: dw
+hCrashType:: db
+hCrashStoreBC:: dw
+hCrashStoreDE:: dw
+hCrashStoreHL:: dw
+hCrashStoreStackContents::
+
+NEXTU
+
 hPrintNumBuffer:: ds 3
 hPrintNumDivBuffer:: ds 3
 

@@ -36,7 +36,8 @@ _rst30:
 
 	ds $38 - @
 _rst38:
-	ret
+	di
+	jp Crash_rst38
 
 	ds $40 - @
 _VBlank:
@@ -276,7 +277,13 @@ Test_HelloWorld:
 	ld b, 4
 	call Divide
 
+	ldh a, [hJoypadHeld]
+	and START
 	ld a, 81
+	jr z, .ok
+	xor a
+.ok
+	;~ ld a, 81
 	ldh [hDivisor], a
 	ld b, 4
 	call Divide
@@ -364,6 +371,8 @@ Test_HelloWorld:
 	jr nz, .a_button
 	bit F_B_BUTTON, a
 	jr nz, .b_button
+	bit F_SELECT, a
+	jr nz, .select
 	ret
 
 .up
@@ -421,32 +430,22 @@ Test_HelloWorld:
 	dw 1,     -1
 
 .a_button
-	ld a, [wHelloWorld_Input]
-	ld e, a
-	ld a, [wHelloWorld_Input + 1]
-	ld d, a
-
-	cp HIGH(300)
-	jr c, .got_flag
-	ret nz
-	ld a, e
-	cp LOW(300)
-	ret nc
-.got_flag
-	ld hl, wHelloWorld_Flags
-	ldh a, [hJoypadHeld]
-	and SELECT
-	jr z, .no_select
-	call ClearFlag
-	ret
-
-.no_select
-	call SetFlag
+	ldh a, [$FFE0]
+	ld c, a
+	ldh a, [$FFE1]
+	call SDivide
+	ldh [$FFE2], a
+	ld a, b
+	ldh [$FFE3], a
 	ret
 
 .b_button
-	call Audio_Test
+	;~ call Audio_Test
+	rst $38
 	ret
+
+.select
+	jp hl
 
 Str_HelloWorld:
 	text "This is a test of"
@@ -465,3 +464,5 @@ INCLUDE "home/string.asm"
 INCLUDE "home/call.asm"
 INCLUDE "home/flag.asm"
 INCLUDE "home/font.asm"
+
+INCLUDE "home/crash.asm"

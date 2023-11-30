@@ -6,7 +6,7 @@
 ;   input  - none
 ;   output
 ;       varies for a, hl
-SetDoubleSpeed:
+SetDoubleSpeed::
 	ldh a, [hConsoleType]
 	cp 2
 	ret c
@@ -23,7 +23,7 @@ SetDoubleSpeed:
 ;   input  - none
 ;   output
 ;       varies for a, hl
-SetSingleSpeed:
+SetSingleSpeed::
 	ldh a, [hConsoleType]
 	cp 2
 	ret c

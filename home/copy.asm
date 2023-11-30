@@ -12,7 +12,7 @@
 ;       bc - 0
 ;       de - de.in + bc.in
 ;       hl - hl.in + bc.in
-MemCpy:
+MemCpy::
 	inc b
 	inc c
 	jr .loop
@@ -39,7 +39,7 @@ MemCpy:
 ;   output
 ;       bc - 0
 ;       hl - hl.in + bc.in
-MemFill:
+MemFill::
 ; fills bc bytes at hl with a
 	inc b
 	inc c
@@ -67,7 +67,7 @@ MemFill:
 ;       bc - 0
 ;       de - de.in + b.in * 8
 ;       hl - hl.in + b.in * 16
-MemCpy1BPP:
+MemCpy1BPP::
 .tile_loop
 	ld c, 8
 .put
@@ -94,7 +94,7 @@ MemCpy1BPP:
 ;       a  - 0
 ;       de - de.in + <length of string>
 ;       hl - hl.in + <length of string>
-StrCpy:
+StrCpy::
 ; copies a \0 terminated string from de to hl
 .loop
 	ld a, [de]

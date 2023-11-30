@@ -7,7 +7,7 @@
 ;       a  - signed value
 ;   output
 ;       a  - |a.in|
-AbsoluteValue:
+AbsoluteValue::
 	bit 7, a
 	ret z
 	cpl
