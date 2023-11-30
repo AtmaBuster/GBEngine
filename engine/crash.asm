@@ -72,6 +72,8 @@ ENDR
 	call DisableLCD
 	call Crash_CopyTileMap
 	call LoadFont
+	ld a, (1 << rLCDC_ENABLE) | (1 << rLCDC_TILE_DATA) | (1 << rLCDC_BG_PRIORITY)
+	ldh [rLCDC], a
 	call EnableLCD
 
 	halt
