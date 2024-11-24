@@ -1922,5 +1922,5 @@ db      "$$endcode$$"
 
 ; ================================================================
 
-include "Audio/Waves.asm"
-include "Audio/Songs.asm"
+include "audio/waves.asm"
+include "audio/songs.asm"

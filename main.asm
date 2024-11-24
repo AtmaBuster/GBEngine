@@ -3,7 +3,7 @@ INCLUDE "constants.asm"
 
 SECTION "Audio", ROMX
 
-INCLUDE "Audio/DevSoundX.asm"
+INCLUDE "audio/devsoundx.asm"
 
 
 SECTION "Math", ROMX

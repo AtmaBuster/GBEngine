@@ -188,4 +188,4 @@ DSX_TestWaveSequence:
     
 ; ================================================================
 
-TestSample: incbin "Audio/Samples/test.aud"
+TestSample: incbin "audio/samples/test.aud"
