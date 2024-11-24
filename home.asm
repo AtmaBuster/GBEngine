@@ -183,6 +183,8 @@ _Reset::
 
 .skip_clear_cgb_vram
 
+	farcall DSX_Init
+
 ; load bank 1 by default
 	ld a, 1
 	rst BankSwitch
@@ -440,8 +442,9 @@ Test_HelloWorld:
 	ret
 
 .b_button
-	;~ call Audio_Test
-	rst $38
+	; TEST
+	ld hl, DSX_TestSong
+	call PlaySong
 	ret
 
 .select
@@ -464,5 +467,6 @@ INCLUDE "home/string.asm"
 INCLUDE "home/call.asm"
 INCLUDE "home/flag.asm"
 INCLUDE "home/font.asm"
+INCLUDE "home/audio.asm"
 
 INCLUDE "home/crash.asm"

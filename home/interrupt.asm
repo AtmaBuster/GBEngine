@@ -3,6 +3,7 @@ VBlank::
 	call Random
 	call Joypad
 	call VBlank_HandleScroll
+	farcall DSX_Update
 
 	ld a, 1
 	ldh [hVBlank], a
