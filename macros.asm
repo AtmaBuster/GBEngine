@@ -179,13 +179,13 @@ rept _NARG / 3
 endr
 ENDM
 
-palred   EQUS "(1 << 0) *"
-palgreen EQUS "(1 << 5) *"
-palblue  EQUS "(1 << 10) *"
+DEF palred   EQUS "(1 << 0) *"
+DEF palgreen EQUS "(1 << 5) *"
+DEF palblue  EQUS "(1 << 10) *"
 
-hlcoord EQUS "coord hl,"
-bccoord EQUS "coord bc,"
-decoord EQUS "coord de,"
+DEF hlcoord EQUS "coord hl,"
+DEF bccoord EQUS "coord bc,"
+DEF decoord EQUS "coord de,"
 
 MACRO coord
 ; register, x, y[, origin]
@@ -196,9 +196,9 @@ MACRO coord
 	endc
 ENDM
 
-hlbgcoord EQUS "bgcoord hl,"
-bcbgcoord EQUS "bgcoord bc,"
-debgcoord EQUS "bgcoord de,"
+DEF hlbgcoord EQUS "bgcoord hl,"
+DEF bcbgcoord EQUS "bgcoord bc,"
+DEF debgcoord EQUS "bgcoord de,"
 
 MACRO bgcoord
 ; register, x, y[, origin]
@@ -217,8 +217,8 @@ ENDM
 ; enumerate constants
 
 MACRO flag_const
-F_\1 EQU \2
-\1 EQU (1 << \2)
+DEF F_\1 EQU \2
+DEF \1 EQU (1 << \2)
 ENDM
 
 MACRO const_def
@@ -235,7 +235,7 @@ ENDC
 ENDM
 
 MACRO const
-\1 EQU const_value
+DEF \1 EQU const_value
 const_value = const_value + const_inc
 ENDM
 
