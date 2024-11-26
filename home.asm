@@ -4,6 +4,15 @@ SECTION "Vectors", ROM0[$0000]
 Reset:
 	jp _Reset
 
+POP_HLDEBCAF_RET:
+	pop hl
+POP_DEBCAF_RET:
+	pop de
+POP_BCAF_RET:
+	pop bc
+	pop af
+	ret
+
 	ds $08 - @
 BankSwitch:
 	ld [MBC5RomBank], a
@@ -70,15 +79,6 @@ INCLUDE "home/copy.asm"
 INCLUDE "home/lcd_onoff.asm"
 INCLUDE "home/speed.asm"
 INCLUDE "home/delay.asm"
-
-POP_HLDEBCAF_RET:
-	pop hl
-POP_DEBCAF_RET:
-	pop de
-POP_BCAF_RET:
-	pop bc
-	pop af
-	ret
 
 	ds $ED - @
 
