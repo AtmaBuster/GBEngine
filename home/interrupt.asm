@@ -88,10 +88,6 @@ ENDR
 
 	ret
 
-Random::
-; NYI
-	ret
-
 Joypad::
 ; get D-Pad
 	ld a, R_DPAD

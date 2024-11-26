@@ -69,3 +69,9 @@ ENDU
 hMathBuffer:: ds 5
 
 ENDU
+
+; Random number generator
+hRandomX:: db
+hRandomY:: db
+hRandomZ:: db
+hRandomA:: db
