@@ -12,5 +12,6 @@ DEF tile1bpp  EQUS " + $08 * "
 DEF tiles1bpp EQUS " * $08"
 
 ; for hCrashType
-DEF ERR_RST38 EQU 0
-DEF ERR_DIV0  EQU 1
+DEF ERR_RST38  EQU 0
+DEF ERR_DIV0   EQU 1
+DEF ERR_JOYINT EQU 2

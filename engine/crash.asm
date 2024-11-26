@@ -130,6 +130,9 @@ Crash_PutVars:
 	call Crash_PutHex
 	hlcoord 6, 15
 	ldh a, [hConsoleType]
+	call Crash_PutHex
+	hlcoord 6, 16
+	ldh a, [hRAMBank]
 	jp Crash_PutHex
 
 Crash_CopyTileMap:
@@ -208,15 +211,18 @@ Crash_BaseTilemap:
 	db "           + 4= XXXX"
 	db "BANK :XX   + 6= XXXX"
 	db "HW   :XX   + 8= XXXX"
-	db "           +10= XXXX"
+	db "RAM  :XX   +10= XXXX"
 	db "           +12= XXXX"
 .end
 
 Crash_ErrorStrings:
 	dw .Err_rst38
 	dw .Err_div0
+	dw .Err_joyint
 
 .Err_rst38
 	str "0xFF EXEC"
 .Err_div0
 	str "DIVIDE BY ZERO"
+.Err_joyint
+	str "JOYPAD INT."

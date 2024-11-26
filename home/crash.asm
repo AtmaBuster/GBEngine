@@ -3,6 +3,11 @@ Crash_rst38::
 	ld a, ERR_RST38 ; don't optimize, keep flags
 	jr CrashHandler
 
+Crash_JoypadInt::
+	ldh [hCrashStoreAF + 1], a
+	ld a, ERR_JOYINT
+	jr CrashHandler
+
 Crash_div0::
 	di
 	ldh [hCrashStoreAF + 1], a

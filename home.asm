@@ -62,9 +62,9 @@ _Serial:
 
 	ds $60 - @
 _Joypad:
-	reti
+	jp Crash_JoypadInt
 
-SECTION "Low ROM", ROM0[$0061]
+SECTION "Low ROM", ROM0[$0063]
 
 INCLUDE "home/copy.asm"
 INCLUDE "home/lcd_onoff.asm"
