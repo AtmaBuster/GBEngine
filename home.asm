@@ -70,7 +70,15 @@ INCLUDE "home/copy.asm"
 INCLUDE "home/lcd_onoff.asm"
 INCLUDE "home/speed.asm"
 INCLUDE "home/delay.asm"
-INCLUDE "home/simple_math.asm"
+
+POP_HLDEBCAF_RET:
+	pop hl
+POP_DEBCAF_RET:
+	pop de
+POP_BCAF_RET:
+	pop bc
+	pop af
+	ret
 
 	ds $ED - @
 
