@@ -1,1 +1,7 @@
-
+WRAM0
+	org $C000
+	"DevSound X RAM defines"
+	org $C0EE
+	"Link RAM"
+	org $C100
+	"Stack RAM"

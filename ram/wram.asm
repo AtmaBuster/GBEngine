@@ -1,29 +1,31 @@
-SECTION "W Audio", WRAM0[$C000]
+SECTION "Link RAM", WRAM0
 
-	ds $100 ; TODO
+wLinkBufferPos:: db
+wLinkBufferChecksum:: db
+wLinkTransferBuffer:: ds $10
 
-SECTION "W Stack", WRAM0[$C100]
+SECTION "Stack RAM", WRAM0
 
 wStack:: ds $100
 wStackPointer::
 
-SECTION "W Tile Map", WRAM0
+SECTION "Tile Map RAM", WRAM0
 
 wTileMap:: ds SCREEN_WIDTH * SCREEN_HEIGHT
 IF CGB_SUPPORT == 1
 wAttrMap:: ds SCREEN_WIDTH * SCREEN_HEIGHT
 ENDC
 
-SECTION "W Line Offset", WRAM0, ALIGN[4]
+SECTION "Line Offset RAM", WRAM0, ALIGN[4]
 
 wLineOffsetCommands:: ds 16
 wLineOffsetPos:: db
 
-SECTION "W String", WRAM0
+SECTION "String RAM", WRAM0
 
 wPrintNumBuffer:: ds 9
 
-SECTION "W Program", WRAM0
+SECTION "Program RAM", WRAM0
 
 wHelloWorld_Input:: dw
 wHelloWorld_Output:: ds 2
