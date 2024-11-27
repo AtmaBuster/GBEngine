@@ -1,9 +1,3 @@
-SECTION "Link RAM", WRAM0
-
-wLinkBufferPos:: db
-wLinkBufferChecksum:: db
-wLinkTransferBuffer:: ds $10
-
 SECTION "Stack RAM", WRAM0
 
 wStack:: ds $100
@@ -25,11 +19,8 @@ SECTION "String RAM", WRAM0
 
 wPrintNumBuffer:: ds 9
 
-SECTION "Program RAM", WRAM0
+SECTION "Program RAM", WRAM0, ALIGN[4]
 
-wHelloWorld_Input:: dw
-wHelloWorld_Output:: ds 2
-wHelloWorld_OutputR:: db
-wHelloWorld_Cursor:: db
-
-wHelloWorld_Flags:: bitfield 300
+wHelloWorld_MyNameIndex:: db
+wHelloWorld_MyName:: ds 16
+wHelloWorld_TheirName:: ds 16

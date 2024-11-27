@@ -67,7 +67,11 @@ _Timer:
 
 	ds $58 - @
 _Serial:
-	reti
+	push af
+	push bc
+	push de
+	push hl
+	jp Serial
 
 	ds $60 - @
 _Joypad:
@@ -259,117 +263,50 @@ Test_HelloWorld:
 .mainloop
 	call DelayFrame
 	call .handle_joypad
+	call .draw_screen
+	jr .mainloop
 
-	hlcoord 0, 10
-	ld bc, SCREEN_WIDTH * 4
-	ld a, " "
-	call MemFill
-
-	hlcoord 2, 11
-	ld a, [wHelloWorld_Cursor]
-	cp 4
-	jr nz, .got_cursor_pos
-	inc a
-.got_cursor_pos
-	ld c, a
-	ld b, 0
-	add hl, bc
-	ld [hl], "^"
-
-	load_multiplicand 2, wHelloWorld_Input
-
-	ld a, 100
-	ldh [hMultiplier], a
-	call Multiply
-
-	ld a, 125
-	ldh [hMultiplier], a
-	call Multiply
-
-	ld a, 7
-	ldh [hDivisor], a
-	ld b, 4
-	call Divide
-
-	ldh a, [hJoypadHeld]
-	and START
-	ld a, 81
-	jr z, .ok
-	xor a
-.ok
-	;~ ld a, 81
-	ldh [hDivisor], a
-	ld b, 4
-	call Divide
-
-	ldh a, [hDividend + 3]
-	add 5
-	ldh [hDividend + 3], a
-	ldh a, [hDividend + 2]
+.draw_screen
+	ld a, [wHelloWorld_MyNameIndex]
+	swap a
+	add LOW(.name_list)
+	ld e, a
+	ld a, HIGH(.name_list)
 	adc 0
-	ldh [hDividend + 2], a
-	ldh a, [hDividend + 1]
-	adc 0
-	ldh [hDividend + 1], a
-	ldh a, [hDividend + 0]
-	adc 0
-	ldh [hDividend + 0], a
-	ld a, 10
-	ldh [hDivisor], a
-	ld b, 4
-	call Divide
+	ld d, a
+	ld hl, wHelloWorld_MyName
+	ld bc, 16
+	call MemCpy
 
-	ld a, 10
-	ldh [hDivisor], a
-	ld b, 4
-	call Divide
+	ld de, wHelloWorld_MyName
+	hlcoord 1, 10
+	ld bc, 16
+	call MemCpy
 
-	load_quotient 2, wHelloWorld_Output
-	ldh a, [hRemainder]
-	ld [wHelloWorld_OutputR], a
+	ld de, wHelloWorld_TheirName
+	hlcoord 1, 12
+	ld bc, 16
+	call MemCpy
 
-	ld de, wHelloWorld_Input
-	hlcoord 2, 10
-	ld b, PRINTNUM_2BYTE
-	call PrintNum
+	ret
 
-	ld de, wHelloWorld_Output
-	hlcoord 1, 13
-	ld b, PRINTNUM_2BYTE
-	call PrintNum
-
-	hlcoord 6, 13
-	ld [hl], "."
-	ld de, wHelloWorld_OutputR
-	hlcoord 7, 13
-	ld b, PRINTNUM_1BYTE | (1 << F_PRINTNUM_LALIGN)
-	call PrintNum
-
-	hlcoord 6, 10
-	ld a, [hli]
-	ld [hld], a
-	ld [hl], "."
-	dec hl
-	ld a, [hl]
-	cp " "
-	jr nz, .ok_space
-	ld [hl], "0"
-.ok_space
-	hlcoord 9, 10
-	ld a, "k"
-	ld [hli], a
-	ld a, "g"
-	ld [hl], a
-
-	hlcoord 9, 13
-	ld a, "l"
-	ld [hli], a
-	ld a, "b"
-	ld [hli], a
-	ld a, "s"
-	ld [hl], a
-
-	jp .mainloop
+.name_list
+	db "0000000011111111"
+	db "2222222233333333"
+	db "4444444455555555"
+	db "6666666677777777"
+	db "8888888899999999"
+	db "AAAAAAAABBBBBBBB"
+	db "CCCCCCCCDDDDDDDD"
+	db "EEEEEEEEFFFFFFFF"
+	db "GGGGGGGGHHHHHHHH"
+	db "IIIIIIIIJJJJJJJJ"
+	db "KKKKKKKKLLLLLLLL"
+	db "MMMMMMMMNNNNNNNN"
+	db "OOOOOOOOPPPPPPPP"
+	db "QQQQQQQQRRRRRRRR"
+	db "SSSSSSSSTTTTTTTT"
+	db "UUUUUUUUVVVVVVVV"
 
 .handle_joypad
 	ldh a, [hJoypadDown]
@@ -385,94 +322,155 @@ Test_HelloWorld:
 	jr nz, .a_button
 	bit F_B_BUTTON, a
 	jr nz, .b_button
+	bit F_START, a
+	jr nz, .start
 	bit F_SELECT, a
 	jr nz, .select
 	ret
 
 .up
-	ld b, 0
-	jr .change_value
+	ld hl, wHelloWorld_MyNameIndex
+	ld a, [hl]
+	inc a
+	and $F
+	ld [hl], a
+	ret
 
 .down
-	ld b, 2
-.change_value
-	ld a, [wHelloWorld_Cursor]
-	add a
-	add a
-	add b
-	ld c, a
-	ld b, 0
-	ld hl, .diff_table
-	add hl, bc
-	ld a, [hli]
-	ld h, [hl]
-	ld l, a
-	ld a, [wHelloWorld_Input]
-	ld c, a
-	ld a, [wHelloWorld_Input + 1]
-	ld b, a
-	add hl, bc
-	ld a, l
-	ld [wHelloWorld_Input], a
-	ld a, h
-	ld [wHelloWorld_Input + 1], a
+	ld hl, wHelloWorld_MyNameIndex
+	ld a, [hl]
+	dec a
+	and $F
+	ld [hl], a
 	ret
+
+.start
+	jr Test_HelloWorld_LinkTransfer
 
 .right
-	ld a, [wHelloWorld_Cursor]
-	inc a
-	cp 5
-	jr nz, .set_cursor
-	xor a
-	jr .set_cursor
-
 .left
-	ld a, [wHelloWorld_Cursor]
-	dec a
-	cp -1
-	jr nz, .set_cursor
-	ld a, 4
-.set_cursor
-	ld [wHelloWorld_Cursor], a
-	ret
-
-.diff_table
-	dw 10000, -10000
-	dw 1000,  -1000
-	dw 100,   -100
-	dw 10,    -10
-	dw 1,     -1
-
 .a_button
-	ldh a, [$FFE0]
-	ld c, a
-	ldh a, [$FFE1]
-	call SDivide
-	ldh [$FFE2], a
-	ld a, b
-	ldh [$FFE3], a
-	ret
-
 .b_button
-	; TEST
-	ld hl, DSX_TestSong
-	call PlaySong
+.select
 	ret
 
-.select
-	jp hl
+Test_HelloWorld_LinkTransfer:
+	ld a, 3
+	call Test_HelloWorld_DrawStatusString
+	call Serial_EstablishConnection
+	ldh a, [hSerialConnectionStatus]
+	bit F_SERIAL_CONNECTION_OK, a
+	jr nz, .connection_ok
+	bit F_SERIAL_CONNECTION_TIMEOUT, a
+	jr nz, .timeout_on_establish
+	ld a, 1
+	call Test_HelloWorld_DrawStatusString
+	ldh a, [hSerialGet]
+	hlcoord 1, 16
+	call THW_DrawHex
+	ret
+
+.timeout_on_establish
+	ld a, 2
+	call Test_HelloWorld_DrawStatusString
+	ldh a, [hSerialGet]
+	hlcoord 1, 16
+	call THW_DrawHex
+	ret
+
+.connection_ok
+	ld c, 16
+.xfer_loop
+	push bc
+	ld a, LOW(wHelloWorld_MyName)
+	add c
+	ld c, a
+	ld b, HIGH(wHelloWorld_MyName)
+	dec bc
+	ld a, [bc]
+	ldh [hSerialSend], a
+
+	call Serial_SendAndReceiveByte
+	ldh a, [hSerialConnectionStatus]
+	bit F_SERIAL_CONNECTION_OK, a
+	pop bc
+	jr nz, .byte_ok
+	ld a, 2
+	call Test_HelloWorld_DrawStatusString
+	ret
+
+.byte_ok
+	push bc
+	ld a, LOW(wHelloWorld_TheirName)
+	add c
+	ld c, a
+	ld b, HIGH(wHelloWorld_TheirName)
+	ldh a, [hSerialGet]
+	dec bc
+	ld [bc], a
+	pop bc
+
+	dec c
+	jr nz, .xfer_loop
+
+	call Serial_CloseConnection
+	ld a, 4
+	call Test_HelloWorld_DrawStatusString
+	ret
+
+THW_DrawHex:
+; put hex(a) -> hl
+	push af
+	swap a
+	call .put_digit
+	pop af
+.put_digit
+	and $0F
+	add "0"
+IF "9" != "A" - 1
+	cp "9" + 1
+	jr c, .got_digit
+	add "A" - "9" - 1
+.got_digit
+ENDC
+	ld [hli], a
+	ret
+
+Test_HelloWorld_DrawStatusString:
+	ld hl, .str_list
+	and a
+	jr z, .gotit
+	ld de, 38
+:
+	add hl, de
+	dec a
+	jr nz, :-
+.gotit
+	ld d, h
+	ld e, l
+	hlcoord 1, 14
+	ld bc, 38
+	call MemCpy
+	ret
+
+.str_list
+;           001122334455667788..99AABBCCDDEEFF0011
+	db "                                      "
+	db "Failed to estab-    lish connection.  "
+	db "Connection timed    out.              "
+	db "Awaiting link...                      "
+	db "Link transfer       completed!        "
 
 Str_HelloWorld:
 	text "This is a test of"
-	line "the math routines."
+	line "the link routines."
 	line
-	line "It converts from"
-	line "kg to lbs."
+	line "It trades a name"
+	line "between games."
 	line
-	line "Change the number"
-	line "with the D-pad."
+	line "Choose a name w/"
+	line "the D-pad."
 	text_end
-	;~ str "Hello, world!\n\nWelcome to\nthe game :D\n\nPress \"A\" to make\nthe number go up."
 
 INCLUDE "home/math.asm"
 INCLUDE "home/string.asm"
@@ -481,5 +479,6 @@ INCLUDE "home/flag.asm"
 INCLUDE "home/font.asm"
 INCLUDE "home/audio.asm"
 INCLUDE "home/random.asm"
+INCLUDE "home/serial.asm"
 
 INCLUDE "home/crash.asm"

@@ -4,6 +4,15 @@ DEF HW_SGB EQU 1
 DEF HW_CGB EQU 2
 DEF HW_AGB EQU 3
 
+; for hSerialTransferStatus
+DEF F_SERIAL_GET      EQU 7
+DEF SERIAL_TIMER_MASK EQU %00111111
+
+; for hSerialConnectionStatus
+DEF F_SERIAL_CONNECTION_OK      EQU 7
+DEF F_SERIAL_CONNECTION_TIMEOUT EQU 6
+DEF F_SERIAL_CONECTION_CLOCK    EQU 0
+
 ; for vram offsets
 DEF tile      EQUS " + $10 * "
 DEF tiles     EQUS " * $10"

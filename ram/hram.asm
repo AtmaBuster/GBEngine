@@ -4,6 +4,18 @@ hConsoleType:: db
 hROMBank:: db
 hRAMBank:: db
 
+hSerialTransferStatus:: db
+; R.TTTTTT
+; R = Received byte
+; T = Timeout timer
+hSerialConnectionStatus:: db
+; KT.....C
+; K = Connection OK
+; T = Timeout error
+; C = Using external clock
+hSerialGet:: db
+hSerialSend:: db
+
 hSPStore:: dw
 
 hJoypadDown:: db ; pressed this frame
