@@ -269,6 +269,10 @@ Test_SpriteTest:
 	ld bc, 16
 	call MemCpy
 
+	call SPRT_Joypad.select
+	call SPRT_Joypad.select
+	call SPRT_Joypad.select
+
 	ld hl, rLCDC
 	set rLCDC_SPRITES_ENABLE, [hl]
 	call EnableLCD
