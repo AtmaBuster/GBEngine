@@ -38,7 +38,7 @@ _Random::
 Random::
 	push bc
 	push de
-	call Random
+	call _Random
 	pop de
 	pop bc
 	ret
