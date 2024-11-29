@@ -245,6 +245,191 @@ Str_HelloWorld:
 	line "the D-pad."
 	text_end
 
+Test_SpriteTest:
+
+	ldh a, [hConsoleType]
+	cp HW_CGB
+	jr c, .skip_palettes
+
+	ld a, (1 << rOBPI_AUTO_INCREMENT)
+	ldh [rOBPI], a
+	ld c, LOW(rOBPD)
+
+	REPT 5
+	REPT 3
+	ld a, $FF
+	ldh [c], a
+	ld a, $7F
+	ldh [c], a
+	ENDR
+	xor a
+	ldh [c], a
+	ldh [c], a
+	ENDR
+
+.skip_palettes
+
+	ld hl, $8000
+	ld de, .TestingTile
+	ld bc, 16
+	call MemCpy
+
+	ld hl, rLCDC
+	set rLCDC_SPRITES_ENABLE, [hl]
+	call EnableLCD
+	ld a, (1 << VBLANK)
+	ldh [rIE], a
+	ei
+.loop
+	call DelayFrame
+	call SPRT_UpdateSprites
+	call SPRT_CopySprites
+	call SPRT_Joypad
+	jr .loop
+
+.TestingTile:
+	db %11111111, %11111111
+	db %10000001, %10000001
+	db %10000001, %10000001
+	db %10000001, %10000001
+	db %10000001, %10000001
+	db %10000001, %10000001
+	db %10000001, %10000001
+	db %11111111, %11111111
+
+SPRT_Joypad:
+	ldh a, [hJoypadDown]
+	bit F_SELECT, a
+	jr nz, .select
+	ret
+
+.select
+	ld hl, wSprTest
+	ld c, 5 ; num sprites
+.loop
+	call Random
+	and %00001111
+	ld [hli], a
+	call Random
+	and %00000011
+	ld [hli], a
+	call Random
+	and %10000111
+	cp 80
+	jr c, .ok
+	and %01111111
+	cpl
+	inc a
+.ok
+	ld [hli], a
+	call Random
+	and %00000011
+	ld [hli], a
+	dec c
+	jr nz, .loop
+	ret
+
+SPRT_UpdateSprites:
+	ld de, wSprTest
+	ld c, 5 ; num sprites
+.loop
+	push bc
+	push de
+	call .UpdateSprite
+	pop hl
+	ld bc, 4
+	add hl, bc
+	ld d, h
+	ld e, l
+	pop bc
+	dec c
+	jr nz, .loop
+	ret
+
+DEF SPR_X_POS EQU 0
+DEF SPR_Y_POS EQU 1
+DEF SPR_X_VEL EQU 2
+DEF SPR_Y_VEL EQU 3
+MACRO getval
+	ld hl, \1
+	add hl, de
+	ld a, [hl]
+ENDM
+MACRO setval
+	ld hl, \1
+	add hl, de
+	ld [hl], a
+ENDM
+.UpdateSprite:
+	getval SPR_X_VEL
+	ld c, a
+	getval SPR_X_POS
+	add c
+	setval SPR_X_POS
+	getval SPR_Y_VEL
+	inc a
+	setval SPR_Y_VEL
+	ld c, a
+	getval SPR_Y_POS
+	add c
+	cp 136
+	jr c, .no_hit_bottom
+.hit_bottom
+	getval SPR_Y_VEL
+	dec a
+	jr z, .got_new_y_vel
+	dec a
+.got_new_y_vel
+	cpl
+	inc a
+	setval SPR_Y_VEL
+	ld c, a
+	getval SPR_Y_POS
+	add c
+.no_hit_bottom
+	setval SPR_Y_POS
+	ret
+
+SPRT_CopySprites:
+	ld de, wSprTest
+	ld c, 5 ; num sprites
+.loop
+	push bc
+	push de
+	call .CopySprite
+	pop hl
+	ld bc, 4
+	add hl, bc
+	ld d, h
+	ld e, l
+	pop bc
+	dec c
+	jr nz, .loop
+	ret
+
+.CopySprite:
+	ld a, 5
+	sub c
+	push af
+	add a
+	add a
+	ld l, a
+	ld h, HIGH(wOAMRAM)
+	push hl
+	getval SPR_Y_POS
+	add 16
+	ld b, a
+	getval SPR_X_POS
+	add 8
+	pop hl
+	ld [hl], b
+	inc hl
+	ld [hli], a
+	pop af
+	inc hl
+	ld [hl], a
+	ret
+
 INCLUDE "home/math.asm"
 INCLUDE "home/string.asm"
 INCLUDE "home/call.asm"

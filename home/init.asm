@@ -107,4 +107,4 @@ _Reset::
 	ld a, 1
 	rst BankSwitch
 
-	jp Test_HelloWorld
+	jp Test_SpriteTest

@@ -39,6 +39,17 @@ wPrintNumBuffer:: ds 9
 
 SECTION "Program RAM", WRAM0, ALIGN[4]
 
+UNION
 wHelloWorld_MyNameIndex:: db
 wHelloWorld_MyName:: ds 16
 wHelloWorld_TheirName:: ds 16
+NEXTU
+wSprTest::
+FOR N, 5
+wSprTest_S{1d:N}::
+wSprTest_S{1d:N}_XPos:: db
+wSprTest_S{1d:N}_YPos:: db
+wSprTest_S{1d:N}_XVel:: db
+wSprTest_S{1d:N}_YVel:: db
+ENDR
+ENDU
