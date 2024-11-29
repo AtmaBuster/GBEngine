@@ -1,7 +1,7 @@
 VBlank::
 	call VBlank_CopyTileAndAttrMap
 	call RunDMARoutine
-	call Random
+	call _Random
 	call Joypad
 	call VBlank_HandleScroll
 	farcall DSX_Update

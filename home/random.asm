@@ -1,10 +1,10 @@
 ; ================================================
-; Random
+; _Random
 ; ================================================
 ; Ticks the RNG, returns hRandomA in a
 ; Implementation of https://github.com/edrosten/8bit_rng/blob/master/rng-4261412736.c
 ; ================================================
-Random::
+_Random::
 	ldh a, [hRandomX]
 	ld b, a
 	add a
@@ -31,11 +31,11 @@ Random::
 	ret
 
 ; ================================================
-; SafeRandom
+; Random
 ; ================================================
-; Same as Random, but preserves registers other than a
+; Same as _Random, but preserves registers other than a
 ; ================================================
-SafeRandom::
+Random::
 	push bc
 	push de
 	call Random
@@ -52,7 +52,7 @@ RandomRange::
 	push bc
 	ld c, a
 .loop
-	call SafeRandom
+	call Random
 	cp c
 	jr c, .loop
 	pop bc
