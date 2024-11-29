@@ -14,7 +14,6 @@ hSerialConnectionStatus:: db
 ; T = Timeout error
 ; C = Using external clock
 hSerialGet:: db
-hSerialSend:: db
 
 hSPStore:: dw
 

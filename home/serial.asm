@@ -1,8 +1,6 @@
 Serial:
 	ldh a, [rSB]
 	ldh [hSerialGet], a
-	;ldh a, [hSerialSend]
-	;ldh [rSB], a
 	ld hl, hSerialTransferStatus
 	set F_SERIAL_GET, [hl]
 	pop hl
@@ -11,6 +9,11 @@ Serial:
 	pop af
 	reti
 
+; ================================================
+; Serial_WaitForByte
+; ================================================
+; ---
+; ================================================
 Serial_WaitForByte:
 .loop
 	halt
@@ -34,6 +37,11 @@ Serial_WaitForByte:
 	scf
 	ret
 
+; ================================================
+; Serial_EstablishConnection
+; ================================================
+; ---
+; ================================================
 Serial_EstablishConnection::
 	xor a
 	ldh [hSerialConnectionStatus], a
@@ -78,16 +86,56 @@ ENDR
 
 	ret
 
+; ================================================
+; Serial_SendAndReceiveBytes
+; ================================================
+; Sends c bytes from hl, receives c bytes into de
+; ================================================
+Serial_SendAndReceiveBytes::
+	xor a
+	ldh [hSerialTransferStatus], a
+
+	ld a, [hli]
+
+.loop
+	ldh [rSB], a
+	ldh a, [rSC]
+	bit rSC_CLOCK, a
+	call nz, Serial_MasterClockPause
+	and (1 << rSC_CLOCK) | (1 << rSC_CGB)
+	ldh [rSC], a
+	or (1 << rSC_ON)
+	ldh [rSC], a
+
+	call Serial_WaitForByte
+	jr c, .next_byte
+	call Serial_LinkTimeout
+	and a
+	ret
+
+.next_byte
+	ldh a, [hSerialGet]
+	ld [de], a
+	inc de
+	dec c
+	ret z
+	ld a, [hli]
+	jr .loop
+
+; ================================================
+; Serial_SendAndReceiveByte
+; ================================================
+; ---
+; ================================================
 Serial_SendAndReceiveByte::
 	xor a
 	ldh [hSerialTransferStatus], a
 
-	ldh a, [hSerialSend]
 	ldh [rSB], a
 
 	ldh a, [rSC]
 	bit rSC_CLOCK, a
-	call nz, .Pause
+	call nz, Serial_MasterClockPause
 	and (1 << rSC_CLOCK) | (1 << rSC_CGB)
 	ldh [rSC], a
 	or (1 << rSC_ON)
@@ -99,7 +147,7 @@ Serial_SendAndReceiveByte::
 	and a
 	ret
 
-.Pause
+Serial_MasterClockPause:
 	push af
 	ld a, -1
 :	dec a

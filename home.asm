@@ -291,22 +291,22 @@ Test_HelloWorld:
 	ret
 
 .name_list
-	db "0000000011111111"
-	db "2222222233333333"
-	db "4444444455555555"
-	db "6666666677777777"
-	db "8888888899999999"
-	db "AAAAAAAABBBBBBBB"
-	db "CCCCCCCCDDDDDDDD"
-	db "EEEEEEEEFFFFFFFF"
-	db "GGGGGGGGHHHHHHHH"
-	db "IIIIIIIIJJJJJJJJ"
-	db "KKKKKKKKLLLLLLLL"
-	db "MMMMMMMMNNNNNNNN"
-	db "OOOOOOOOPPPPPPPP"
-	db "QQQQQQQQRRRRRRRR"
-	db "SSSSSSSSTTTTTTTT"
-	db "UUUUUUUUVVVVVVVV"
+	db "Satoshi Tajiri  "
+	db "Junichi Masuda  "
+	db "Sousuke Tamada  "
+	db "Hisashi Sogabe  "
+	db "Yoshinori Matsu."
+	db "Shigeki Morimoto"
+	db "Tetsuya Watanabe"
+	db "Takenori Oota   "
+	db "Ken Sugimori    "
+	db "Motofumi Fujiwa."
+	db "Hironobu Yoshida"
+	db "Atsuko Nishida  "
+	db "Muneo Saito     "
+	db "Rena Yoshikawa  "
+	db "Jun Okutani     "
+	db "Asuka Iwashita  "
 
 .handle_joypad
 	ldh a, [hJoypadDown]
@@ -380,39 +380,16 @@ Test_HelloWorld_LinkTransfer:
 
 .connection_ok
 	ld c, 16
-.xfer_loop
-	push bc
-	ld a, LOW(wHelloWorld_MyName)
-	add c
-	ld c, a
-	ld b, HIGH(wHelloWorld_MyName)
-	dec bc
-	ld a, [bc]
-	ldh [hSerialSend], a
+	ld hl, wHelloWorld_MyName
+	ld de, wHelloWorld_TheirName
+	call Serial_SendAndReceiveBytes
+	jr c, .got_name
 
-	call Serial_SendAndReceiveByte
-	ldh a, [hSerialConnectionStatus]
-	bit F_SERIAL_CONNECTION_OK, a
-	pop bc
-	jr nz, .byte_ok
-	ld a, 2
+	ld a, 1
 	call Test_HelloWorld_DrawStatusString
 	ret
 
-.byte_ok
-	push bc
-	ld a, LOW(wHelloWorld_TheirName)
-	add c
-	ld c, a
-	ld b, HIGH(wHelloWorld_TheirName)
-	ldh a, [hSerialGet]
-	dec bc
-	ld [bc], a
-	pop bc
-
-	dec c
-	jr nz, .xfer_loop
-
+.got_name
 	call Serial_CloseConnection
 	ld a, 4
 	call Test_HelloWorld_DrawStatusString
