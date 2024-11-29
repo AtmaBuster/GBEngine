@@ -3,6 +3,7 @@ INCLUDE "constants.asm"
 INCLUDE "home/header.asm"
 INCLUDE "home/init.asm"
 INCLUDE "home/interrupt.asm"
+INCLUDE "home/oam.asm"
 
 Test_HelloWorld:
 ; quick "Hello, world" program

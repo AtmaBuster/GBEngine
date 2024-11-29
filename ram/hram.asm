@@ -1,6 +1,11 @@
-SECTION "HRAM", HRAM
+SECTION "HRAM Console Info", HRAM
 
 hConsoleType:: db
+
+
+
+SECTION "HRAM Data", HRAM
+
 hROMBank:: db
 hRAMBank:: db
 

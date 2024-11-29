@@ -3,3 +3,9 @@ WRAM0
 	"DevSound X RAM defines"
 	org $C100
 	"Stack RAM"
+	align 8
+	"OAM RAM"
+HRAM
+	"HRAM Console Info"
+	"OAM DMA Routine"
+	"HRAM Data"

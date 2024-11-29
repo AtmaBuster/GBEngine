@@ -26,6 +26,7 @@ _Start::
 
 _Reset::
 ; clear first 2 pages of WRAM
+; don't use the stack, it's not set up yet. also, this would clear it
 	ld hl, $C000
 	ld bc, $0200
 .clear_loop
@@ -70,7 +71,6 @@ _Reset::
 
 	ldh [rSVBK], a
 .skip_clear_cgb_wram
-
 ; clear VRAM
 	call DisableLCD
 
@@ -93,7 +93,10 @@ _Reset::
 	ldh [rVBK], a
 
 .skip_clear_cgb_vram
+; set up OAM DMA routine
+	call CopyDMARoutine
 
+; init sound engine
 	farcall DSX_Init
 
 ; seed RNG
