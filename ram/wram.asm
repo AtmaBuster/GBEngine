@@ -44,8 +44,9 @@ wHelloWorld_MyNameIndex:: db
 wHelloWorld_MyName:: ds 16
 wHelloWorld_TheirName:: ds 16
 NEXTU
+DEF SPRTEST_CT EQU 10
 wSprTest::
-FOR N, 5
+FOR N, SPRTEST_CT
 wSprTest_S{1d:N}::
 wSprTest_S{1d:N}_XPos:: db
 wSprTest_S{1d:N}_YPos:: db

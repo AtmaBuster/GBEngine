@@ -254,18 +254,13 @@ Test_SpriteTest:
 	ld a, (1 << rOBPI_AUTO_INCREMENT)
 	ldh [rOBPI], a
 	ld c, LOW(rOBPD)
-
-	REPT 5
-	REPT 3
-	ld a, $FF
+	ld hl, .pal_data
+	ld b, 64
+:
+	ld a, [hli]
 	ldh [c], a
-	ld a, $7F
-	ldh [c], a
-	ENDR
-	xor a
-	ldh [c], a
-	ldh [c], a
-	ENDR
+	dec b
+	jr nz, :-
 
 .skip_palettes
 
@@ -297,6 +292,17 @@ Test_SpriteTest:
 	db %10000001, %10000001
 	db %11111111, %11111111
 
+.pal_data
+	dw $7FFF, $7FFF, $7FFF, $0000
+	dw $7FFF, $7FFF, $7FFF, $000F
+	dw $7FFF, $7FFF, $7FFF, $01E0
+	dw $7FFF, $7FFF, $7FFF, $3C00
+	dw $7FFF, $7FFF, $7FFF, $001F
+	dw $7FFF, $7FFF, $7FFF, $03E0
+	dw $7FFF, $7FFF, $7FFF, $7C00
+	dw $7FFF, $7FFF, $7FFF, $3DFF
+
+DEF SPRTEST_CT EQU 10
 SPRT_Joypad:
 	ldh a, [hJoypadDown]
 	bit F_SELECT, a
@@ -305,7 +311,7 @@ SPRT_Joypad:
 
 .select
 	ld hl, wSprTest
-	ld c, 5 ; num sprites
+	ld c, SPRTEST_CT ; num sprites
 .loop
 	call Random
 	and %00001111
@@ -331,7 +337,7 @@ SPRT_Joypad:
 
 SPRT_UpdateSprites:
 	ld de, wSprTest
-	ld c, 5 ; num sprites
+	ld c, SPRTEST_CT ; num sprites
 .loop
 	push bc
 	push de
@@ -392,7 +398,7 @@ ENDM
 
 SPRT_CopySprites:
 	ld de, wSprTest
-	ld c, 5 ; num sprites
+	ld c, SPRTEST_CT ; num sprites
 .loop
 	push bc
 	push de
@@ -408,7 +414,7 @@ SPRT_CopySprites:
 	ret
 
 .CopySprite:
-	ld a, 5
+	ld a, SPRTEST_CT
 	sub c
 	push af
 	add a
@@ -427,6 +433,7 @@ SPRT_CopySprites:
 	ld [hli], a
 	pop af
 	inc hl
+	and %111
 	ld [hl], a
 	ret
 
