@@ -1,4 +1,4 @@
-PlaySong:
+PlaySong::
 	ldh a, [hROMBank]
 	push af
 	rst BankSwitch
