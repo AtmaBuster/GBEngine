@@ -61,7 +61,11 @@ _LCD:
 	push af
 	jp LCD
 
-	ds $50 - @
+CheckColorHardware::
+	ldh a, [hConsoleType]
+	and a
+	ret
+
 _Timer:
 	reti
 

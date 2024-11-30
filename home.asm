@@ -249,35 +249,13 @@ Test_SpriteTest:
 
 	call LoadFont
 
-	ldh a, [hConsoleType]
-	cp HW_CGB
-	jr c, .skip_palettes
+	ld hl, .bg_pal_data
+	lb bc, 0, 1
+	call CopyBGPalettes
 
-	ld a, 1 << rBGPI_AUTO_INCREMENT
-	ldh [rBGPI], a
-	ld c, LOW(rBGPD)
-
-	ld a, $FF
-	ldh [c], a
-	ld a, $7F
-	ldh [c], a
-	xor a
-REPT 6
-	ldh [c], a
-ENDR
-
-	ld a, (1 << rOBPI_AUTO_INCREMENT)
-	ldh [rOBPI], a
-	ld c, LOW(rOBPD)
 	ld hl, .pal_data
-	ld b, 64
-:
-	ld a, [hli]
-	ldh [c], a
-	dec b
-	jr nz, :-
-
-.skip_palettes
+	lb bc, 0, 8
+	call CopyOBPalettes
 
 	ld hl, $8010
 	ld de, .TestingTile
@@ -319,6 +297,9 @@ ENDR
 	db %10000001, %10000001
 	db %10000001, %10000001
 	db %11111111, %11111111
+
+.bg_pal_data
+	dw $7FFF, $7FFF, $7FFF, $0000
 
 .pal_data
 	dw $7FFF, $7FFF, $7FFF, $0000
@@ -640,5 +621,6 @@ INCLUDE "home/font.asm"
 INCLUDE "home/audio.asm"
 INCLUDE "home/random.asm"
 INCLUDE "home/serial.asm"
+INCLUDE "home/color.asm"
 
 INCLUDE "home/crash.asm"
