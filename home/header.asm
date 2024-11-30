@@ -11,13 +11,12 @@ POP_BCAF_RET:
 	pop af
 	ret
 
-	ds $08 - @
 BankSwitch:
 	ld [MBC5RomBank], a
 	ldh [hROMBank], a
 	ret
 
-	ds $10 - @
+	ds 2
 FarCall:
 	push af
 	push af
@@ -25,15 +24,18 @@ FarCall:
 	ld hl, sp+5
 	jp _FarCall
 
-	ds $18 - @
-_rst18:
-	ret
+MemCpy::
+	inc b
+	inc c
+	jp _MemCpy.loop
 
-	ds $20 - @
-_rst20:
-	ret
+	ds 2
+MemFill::
+	inc b
+	inc c
+	jp _MemFill.loop
 
-	ds $28 - @
+	ds 2
 _rst28:
 	ret
 

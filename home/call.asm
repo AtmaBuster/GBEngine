@@ -1,8 +1,10 @@
-; These lines are at rst_10, for space efficiency
-;	push af
-;	push af
-;	push hl
-;	ld hl, sp+5
+; ================================================
+; FarCall
+; ================================================
+; Calls routine at <a>:<hl>
+; ================================================
+; code for this routine starts in home/header.asm, for space optimization
+; ================================================
 _FarCall::
 	ldh a, [hROMBank]
 	ld [hl], a

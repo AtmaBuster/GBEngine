@@ -12,10 +12,10 @@
 ;       bc - 0
 ;       de - de.in + bc.in
 ;       hl - hl.in + bc.in
-MemCpy::
-	inc b
-	inc c
-	jr .loop
+; ================================================
+; code for this routine starts in home/header.asm, for space optimization
+; ================================================
+_MemCpy::
 .put
 	ld a, [de]
 	inc de
@@ -39,11 +39,10 @@ MemCpy::
 ;   output
 ;       bc - 0
 ;       hl - hl.in + bc.in
-MemFill::
-; fills bc bytes at hl with a
-	inc b
-	inc c
-	jr .loop
+; ================================================
+; code for this routine starts in home/header.asm, for space optimization
+; ================================================
+_MemFill::
 .put
 	ld [hli], a
 .loop
