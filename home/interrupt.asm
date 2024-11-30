@@ -33,8 +33,11 @@ IF CGB_SUPPORT == 1
 	jr .CopyAttrMap
 
 .CopyTileMap
+	call CheckColorHardware
+	jr z, .skip_vbk_set
 	xor a
 	ldh [rVBK], a
+.skip_vbk_set
 	ld bc, wTileMap
 	jr .CopyMapThird
 
@@ -193,3 +196,13 @@ LCD::
 .exit
 	pop af
 	reti
+
+WaitForLCDAvaialable::
+	ldh a, [rLCDC]
+	bit rLCDC_ENABLE, a
+	ret z
+.wait_loop
+	ldh a, [rLY]
+	cp LY_VBLANK
+	ret nc
+	jr .wait_loop

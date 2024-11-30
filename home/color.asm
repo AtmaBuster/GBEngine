@@ -6,6 +6,7 @@
 CopyBGPalettes::
 	call CheckColorHardware
 	ret z
+	call WaitForLCDAvaialable
 	ld a, b
 	ld b, c
 	ld c, LOW(rBGPI)
@@ -19,6 +20,7 @@ CopyBGPalettes::
 CopyOBPalettes::
 	call CheckColorHardware
 	ret z
+	call WaitForLCDAvaialable
 	ld a, b
 	ld b, c
 	ld c, LOW(rOBPI)
@@ -51,6 +53,7 @@ CopyPals:
 ClearPalettes::
 	call CheckColorHardware
 	ret z
+	call WaitForLCDAvaialable
 	ld c, LOW(rBGPI)
 	call .ClearPals
 	ld c, LOW(rOBPI)
