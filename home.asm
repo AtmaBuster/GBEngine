@@ -247,9 +247,24 @@ Str_HelloWorld:
 
 Test_SpriteTest:
 
+	call LoadFont
+
 	ldh a, [hConsoleType]
 	cp HW_CGB
 	jr c, .skip_palettes
+
+	ld a, 1 << rBGPI_AUTO_INCREMENT
+	ldh [rBGPI], a
+	ld c, LOW(rBGPD)
+
+	ld a, $FF
+	ldh [c], a
+	ld a, $7F
+	ldh [c], a
+	xor a
+REPT 6
+	ldh [c], a
+ENDR
 
 	ld a, (1 << rOBPI_AUTO_INCREMENT)
 	ldh [rOBPI], a
@@ -264,7 +279,7 @@ Test_SpriteTest:
 
 .skip_palettes
 
-	ld hl, $8000
+	ld hl, $8010
 	ld de, .TestingTile
 	ld bc, 16
 	call MemCpy
@@ -272,6 +287,13 @@ Test_SpriteTest:
 	call SPRT_Joypad.select
 	call SPRT_Joypad.select
 	call SPRT_Joypad.select
+
+	ld de, .InfoString
+	hlcoord 1, 1
+	call PrintString
+
+	ld a, 1
+	ldh [hCopyWRAMTileMap], a
 
 	ld hl, rLCDC
 	set rLCDC_SPRITES_ENABLE, [hl]
@@ -284,6 +306,8 @@ Test_SpriteTest:
 	call SPRT_UpdateSprites
 	call SPRT_CopySprites
 	call SPRT_Joypad
+	call SPRT_UpdateScrollTargetY
+	call SPRT_UpdateScrollTargetX
 	jr .loop
 
 .TestingTile:
@@ -306,11 +330,80 @@ Test_SpriteTest:
 	dw $7FFF, $7FFF, $7FFF, $7C00
 	dw $7FFF, $7FFF, $7FFF, $3DFF
 
+.InfoString:
+	text "Press START to"
+	line "jostle."
+	text_end
+
+SPRT_UpdateScrollTargetY:
+	ld a, [wSprTestJostleTimer]
+	and a
+	ret z
+	ld hl, .ScrollTargets
+	ld c, a
+.loop
+	ld a, [hli]
+	cp -1
+	ret z
+	cp c
+	jr nz, .next
+	ld a, [hli]
+	ldh [hScrollTargetY], a
+	ld a, [hl]
+	ldh [hScrollSpeedY], a
+	ret
+
+.next
+	inc hl
+	inc hl
+	jr .loop
+
+.ScrollTargets:
+	db  0,  0,  0
+	db  4,  0, -1
+	db 12,  4,  1
+	db 16, -4, -1
+	db -1
+
+SPRT_UpdateScrollTargetX:
+	ld hl, wSprTestJostleTimer
+	ld a, [hl]
+	and a
+	ret z
+	dec [hl]
+	ld hl, .ScrollTargets
+	ld c, a
+.loop
+	ld a, [hli]
+	cp -1
+	ret z
+	cp c
+	jr nz, .next
+	ld a, [hli]
+	ldh [hScrollTargetX], a
+	ld a, [hl]
+	ldh [hScrollSpeedX], a
+	ret
+
+.next
+	inc hl
+	inc hl
+	jr .loop
+
+.ScrollTargets:
+	db  0,  0,  0
+	db  2,  0, -2
+	db  6,  4,  2
+	db 10, -4, -2
+	db 14,  4,  2
+	db 16, -4, -2
+	db -1
+
 DEF SPRTEST_CT EQU 10
 SPRT_Joypad:
 	ldh a, [hJoypadDown]
-	bit F_SELECT, a
-	jr nz, .select
+	bit F_START, a
+	jr nz, SPRT_JoyStart
 	ret
 
 .select
@@ -337,6 +430,68 @@ SPRT_Joypad:
 	ld [hli], a
 	dec c
 	jr nz, .loop
+	ret
+
+SPRT_JoyStart:
+	ld a, [wSprTestJostleTimer]
+	and a
+	ret nz
+	call .Nudge
+	call .Jump
+	ld a, 16
+	ld [wSprTestJostleTimer], a
+	ret
+
+.Jump:
+	ld hl, wSprTest
+	ld c, SPRTEST_CT
+:
+	inc hl
+	ld a, [hli]
+	inc hl
+	cp 136
+	jr nz, .not_on_ground
+	ld a, [hl]
+	and a
+	jr nz, .not_on_ground
+	call Random
+	and %0000011
+	or %00001000
+	add 4
+	cpl
+	inc a
+	ld [hl], a
+.not_on_ground
+	inc hl
+	dec c
+	jr nz, :-
+	ret
+
+.Nudge:
+	ld hl, wSprTest
+	ld c, SPRTEST_CT
+:
+	inc hl
+	ld a, [hli]
+	cp 136
+	jr nz, .skip_nudge
+	ld a, [hl]
+	and a
+	jr nz, .skip_nudge
+	call Random
+	and %10000111
+	cp $80
+	jr c, .set_nudge
+	xor %10000000
+	cpl
+	inc a
+.set_nudge
+	ld [hl], a
+.skip_nudge
+	inc hl
+	inc hl
+	dec c
+	jr nz, :-
 	ret
 
 SPRT_UpdateSprites:
@@ -375,6 +530,17 @@ ENDM
 	ld c, a
 	getval SPR_X_POS
 	add c
+	cp 153
+	jr c, .got_new_x_pos
+	sub c
+	sub c
+	push af
+	ld a, c
+	cpl
+	inc a
+	setval SPR_X_VEL
+	pop af
+.got_new_x_pos
 	setval SPR_X_POS
 	getval SPR_Y_VEL
 	inc a
@@ -382,7 +548,7 @@ ENDM
 	ld c, a
 	getval SPR_Y_POS
 	add c
-	cp 136
+	cp 137
 	jr c, .no_hit_bottom
 .hit_bottom
 	getval SPR_Y_VEL
@@ -398,6 +564,24 @@ ENDM
 	add c
 .no_hit_bottom
 	setval SPR_Y_POS
+
+	getval SPR_Y_POS
+	cp 136
+	ret nz
+	getval SPR_Y_VEL
+	and a
+	ret nz
+	getval SPR_X_VEL
+	and a
+	ret z
+	cp $80
+	jr c, .dec_xvel
+	inc a
+	jr :+
+.dec_xvel
+	dec a
+:
+	setval SPR_X_VEL
 	ret
 
 SPRT_CopySprites:
@@ -426,17 +610,24 @@ SPRT_CopySprites:
 	ld l, a
 	ld h, HIGH(wOAMRAM)
 	push hl
+	ldh a, [rSCY]
+	ld b, a
 	getval SPR_Y_POS
 	add 16
+	sub b
 	ld b, a
+	ldh a, [rSCX]
+	ld c, a
 	getval SPR_X_POS
 	add 8
+	sub c
 	pop hl
 	ld [hl], b
 	inc hl
 	ld [hli], a
+	ld a, 1
+	ld [hli], a
 	pop af
-	inc hl
 	and %111
 	ld [hl], a
 	ret

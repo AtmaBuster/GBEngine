@@ -54,3 +54,4 @@ wSprTest_S{1d:N}_XVel:: db
 wSprTest_S{1d:N}_YVel:: db
 ENDR
 ENDU
+wSprTestJostleTimer:: db
