@@ -48,11 +48,12 @@ CopyPals:
 ; ================================================
 ; ClearPalettes
 ; ================================================
-; Sets all BG and OBJ palettes to white (31, 31, 31)
+; In CGB mode: Sets all BG and OBJ palettes to white (31, 31, 31)
+; In DMG mode: Zeroes BG pal and both OB pals
 ; ================================================
 ClearPalettes::
 	call CheckColorHardware
-	ret z
+	jr z, .dmg_mode
 	call WaitForLCDAvaialable
 	ld c, LOW(rBGPI)
 	call .ClearPals
@@ -69,4 +70,11 @@ ClearPalettes::
 	ldh [c], a
 	dec b
 	jr nz, .clear_loop
+	ret
+
+.dmg_mode
+	xor a
+	ldh [rBGP], a
+	ldh [rOBP0], a
+	ldh [rOBP1], a
 	ret
