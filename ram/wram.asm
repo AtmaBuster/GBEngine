@@ -55,3 +55,4 @@ wSprTest_S{1d:N}_YVel:: db
 ENDR
 ENDU
 wSprTestJostleTimer:: db
+wSprTestGravityFlip:: db

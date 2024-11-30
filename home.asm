@@ -262,16 +262,13 @@ Test_SpriteTest:
 	ld bc, 16
 	call MemCpy
 
-	call SPRT_Joypad.select
-	call SPRT_Joypad.select
-	call SPRT_Joypad.select
+	call SPRT_InitializeBlocks
+	call SPRT_InitializeBlocks
+	call SPRT_InitializeBlocks
 
 	ld de, .InfoString
 	hlcoord 1, 1
 	call PrintString
-
-	ld a, 1
-	ldh [hCopyWRAMTileMap], a
 
 	ld hl, rLCDC
 	set rLCDC_SPRITES_ENABLE, [hl]
@@ -279,6 +276,8 @@ Test_SpriteTest:
 	ld a, (1 << VBLANK)
 	ldh [rIE], a
 	ei
+
+	call WaitBGMap
 .loop
 	call DelayFrame
 	call SPRT_UpdateSprites
@@ -289,27 +288,27 @@ Test_SpriteTest:
 	jr .loop
 
 .TestingTile:
-	db %11111111, %11111111
-	db %10000001, %10000001
-	db %10000001, %10000001
-	db %10000001, %10000001
-	db %10000001, %10000001
-	db %10000001, %10000001
-	db %10000001, %10000001
-	db %11111111, %11111111
+	db %00111100, %00111100
+	db %01100110, %01111110
+	db %11000011, %11100111
+	db %10000001, %11000011
+	db %10000001, %11000011
+	db %11000011, %11100111
+	db %01100110, %01111110
+	db %00111100, %00111100
 
 .bg_pal_data
 	dw $7FFF, $7FFF, $7FFF, $0000
 
 .pal_data
-	dw $7FFF, $7FFF, $7FFF, $0000
-	dw $7FFF, $7FFF, $7FFF, $000F
-	dw $7FFF, $7FFF, $7FFF, $01E0
-	dw $7FFF, $7FFF, $7FFF, $3C00
-	dw $7FFF, $7FFF, $7FFF, $001F
-	dw $7FFF, $7FFF, $7FFF, $03E0
-	dw $7FFF, $7FFF, $7FFF, $7C00
-	dw $7FFF, $7FFF, $7FFF, $3DFF
+	dw $7FFF, $7FFF, $0000, $0000
+	dw $7FFF, $7FFF, $000C, $0018
+	dw $7FFF, $7FFF, $0180, $0300
+	dw $7FFF, $7FFF, $3000, $6000
+	dw $7FFF, $7FFF, $0018, $001F
+	dw $7FFF, $7FFF, $0300, $03E0
+	dw $7FFF, $7FFF, $6000, $7C00
+	dw $7FFF, $7FFF, $3198, $3DFF
 
 .InfoString:
 	text "Press START to"
@@ -385,9 +384,18 @@ SPRT_Joypad:
 	ldh a, [hJoypadDown]
 	bit F_START, a
 	jr nz, SPRT_JoyStart
+	bit F_SELECT, a
+	jr nz, .select
 	ret
 
 .select
+	ld hl, wSprTestGravityFlip
+	ld a, [hl]
+	xor 1
+	ld [hl], a
+	ret
+
+SPRT_InitializeBlocks:
 	ld hl, wSprTest
 	ld c, SPRTEST_CT ; num sprites
 .loop
@@ -524,7 +532,7 @@ ENDM
 .got_new_x_pos
 	setval SPR_X_POS
 	getval SPR_Y_VEL
-	inc a
+	call .IncOrDec
 	setval SPR_Y_VEL
 	ld c, a
 	getval SPR_Y_POS
@@ -533,9 +541,9 @@ ENDM
 	jr c, .no_hit_bottom
 .hit_bottom
 	getval SPR_Y_VEL
-	dec a
+	call .DecOrInc
 	jr z, .got_new_y_vel
-	dec a
+	call .DecOrInc
 .got_new_y_vel
 	cpl
 	inc a
@@ -546,9 +554,19 @@ ENDM
 .no_hit_bottom
 	setval SPR_Y_POS
 
+	ld a, [wSprTestGravityFlip]
+	and a
+	jr z, .friction_no_grav_flip
+	getval SPR_Y_POS
+	and a
+	ret nz
+	jr .do_friction
+
+.friction_no_grav_flip
 	getval SPR_Y_POS
 	cp 136
 	ret nz
+.do_friction
 	getval SPR_Y_VEL
 	and a
 	ret nz
@@ -563,6 +581,34 @@ ENDM
 	dec a
 :
 	setval SPR_X_VEL
+	ret
+
+.IncOrDec:
+	push af
+	ld a, [wSprTestGravityFlip]
+	and a
+	jr z, :+
+	pop af
+	dec a
+	ret
+
+:
+	pop af
+	inc a
+	ret
+
+.DecOrInc:
+	push af
+	ld a, [wSprTestGravityFlip]
+	and a
+	jr z, :+
+	pop af
+	inc a
+	ret
+
+:
+	pop af
+	dec a
 	ret
 
 SPRT_CopySprites:
