@@ -622,5 +622,6 @@ INCLUDE "home/audio.asm"
 INCLUDE "home/random.asm"
 INCLUDE "home/serial.asm"
 INCLUDE "home/color.asm"
+INCLUDE "home/delay2.asm"
 
 INCLUDE "home/crash.asm"
