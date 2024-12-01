@@ -29,13 +29,13 @@ MemCpy::
 	inc c
 	jp _MemCpy.loop
 
-	ds 2
+	ds 3
 MemFill::
 	inc b
 	inc c
 	jp _MemFill.loop
 
-	ds 2
+	ds 3
 _rst28:
 	ret
 
