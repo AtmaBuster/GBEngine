@@ -36,6 +36,8 @@ hScrollTargetX:: db
 hScrollSpeedX:: db
 hScrollTargetY:: db
 hScrollSpeedY:: db
+hScrollSpeedDiv:: db
+hScrollSpeedDivTimer:: db
 
 assert hScrollSpeedX == hScrollTargetX + 1
 assert hScrollSpeedY == hScrollTargetY + 1

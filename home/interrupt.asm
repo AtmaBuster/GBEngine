@@ -141,6 +141,20 @@ ENDR
 
 ; TODO - better register management (?)
 VBlank_HandleScroll::
+	ldh a, [hScrollSpeedDiv]
+	and a
+	jr z, .div_ok
+	inc a
+	ld e, a
+	ld c, LOW(hScrollSpeedDivTimer)
+	ldh a, [c]
+	inc a
+	ldh [c], a
+	cp e
+	ret c
+	xor a
+	ldh [c], a
+.div_ok
 	lb de, LOW(hScrollTargetX), LOW(rSCX)
 	call .handle_scroll
 	lb de, LOW(hScrollTargetY), LOW(rSCY)
