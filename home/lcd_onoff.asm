@@ -16,7 +16,10 @@ DisableLCD::
 .wait_for_vblank
 	ldh a, [rLY]
 	cp 144 ; past bottom line
-	jr nz, .wait_for_vblank
+	jr c, .wait_for_vblank
+	cp 152
+	jr nc, .wait_for_vblank
+.hit_vblank
 	res rLCDC_ENABLE, [hl]
 	ret
 
