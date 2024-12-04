@@ -7,8 +7,7 @@
 ;   output
 ;       varies for a, hl
 SetDoubleSpeed::
-	ldh a, [hConsoleType]
-	cp 2
+	call CheckColorHardware
 	ret c
 	ld hl, rKEY1
 	bit 7, [hl]
@@ -24,8 +23,7 @@ SetDoubleSpeed::
 ;   output
 ;       varies for a, hl
 SetSingleSpeed::
-	ldh a, [hConsoleType]
-	cp 2
+	call CheckColorHardware
 	ret c
 	ld hl, rKEY1
 	bit 7, [hl]

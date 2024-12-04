@@ -17,8 +17,7 @@ Test_HelloWorld:
 ; copy font graphics to VRAM
 	call LoadFont
 ; if on CGB, set up simple palettes
-	ldh a, [hConsoleType]
-	cp HW_CGB
+	call CheckColorHardware
 	jr c, .skip_palettes
 
 	ld a, 1 << rBGPI_AUTO_INCREMENT

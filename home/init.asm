@@ -52,8 +52,7 @@ _Reset::
 	xor a
 	call MemFill
 
-	ldh a, [hConsoleType]
-	cp HW_CGB
+	call CheckColorHardware
 	jr c, .skip_clear_cgb_wram
 
 	ld a, 7
@@ -79,8 +78,7 @@ _Reset::
 	xor a
 	call MemFill
 
-	ldh a, [hConsoleType]
-	cp HW_CGB
+	call CheckColorHardware
 	jr c, .skip_clear_cgb_vram
 
 	ld a, 1

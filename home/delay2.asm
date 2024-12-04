@@ -7,8 +7,7 @@ WaitBGMap::
 	ld a, 1
 	ldh [hCopyWRAMTileMap], a
 
-	ldh a, [hConsoleType]
-	cp HW_CGB
+	call CheckColorHardware
 	ld c, 3
 	jr c, .do_wait
 	ld c, 6

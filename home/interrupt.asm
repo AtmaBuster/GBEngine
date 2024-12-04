@@ -34,7 +34,7 @@ IF CGB_SUPPORT == 1
 
 .CopyTileMap
 	call CheckColorHardware
-	jr z, .skip_vbk_set
+	jr c, .skip_vbk_set
 	xor a
 	ldh [rVBK], a
 .skip_vbk_set
@@ -42,12 +42,16 @@ IF CGB_SUPPORT == 1
 	jr .CopyMapThird
 
 .CopyAttrMap
-	ldh a, [hConsoleType]
-	cp HW_CGB
+	call CheckColorHardware
 	ret c
 	ld a, 1
 	ldh [rVBK], a
 	ld bc, wAttrMap
+	call .CopyMapThird
+	xor a
+	ldh [rVBK], a
+	ret
+
 ELSE
 	ld bc, wTileMap
 ENDC

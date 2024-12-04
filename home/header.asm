@@ -61,13 +61,14 @@ _LCD:
 	push af
 	jp LCD
 
-CheckColorHardware::
-	ldh a, [hConsoleType]
-	and a
-	ret
-
+	ds $50 - @
 _Timer:
 	reti
+
+CheckColorHardware::
+	ldh a, [hConsoleType]
+	cp HW_CGB
+	ret
 
 	ds $58 - @
 _Serial:
