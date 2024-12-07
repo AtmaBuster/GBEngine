@@ -94,3 +94,7 @@ hRandomX:: db
 hRandomY:: db
 hRandomZ:: db
 hRandomA:: db
+
+IF INCLUDE_SOFT_RESET
+hDisableSoftReset:: db
+ENDC

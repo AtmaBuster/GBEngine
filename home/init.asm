@@ -25,6 +25,18 @@ _Start::
 	ldh [hConsoleType], a
 
 _Reset::
+; initialize several IO registers
+	xor a
+	ldh [rIF], a
+	ldh [rNR50], a
+	ldh [rNR52], a
+	ldh [rSCY], a
+	ldh [rSCX], a
+	ldh [rIE], a
+	ld a, 144
+	ldh [rWY], a
+	ld a, 7
+	ldh [rWX], a
 ; clear first 2 pages of WRAM
 ; don't use the stack, it's not set up yet. also, this would clear it
 	ld hl, $C000

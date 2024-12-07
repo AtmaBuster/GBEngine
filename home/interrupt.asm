@@ -141,6 +141,14 @@ ENDR
 	ld a, b
 	ldh [hJoypadHeld], a
 
+IF INCLUDE_SOFT_RESET
+	and SOFT_RESET_MASK
+	cp SOFT_RESET_MASK
+	ret nz
+	ldh a, [hDisableSoftReset]
+	and a
+	jp z, _Reset
+ENDC
 	ret
 
 ; TODO - better register management (?)
